@@ -16,14 +16,14 @@ category:            CLI,Framework
 build-type:          Simple
 extra-doc-files:     README.md
                      CHANGELOG.md
-tested-with:         GHC == 9.0.2
+tested-with:         GHC == 8.10.7
 
 source-repository head
   type:                git
   location:            https://github.com/chshersh/iris.git
 
 common common-options
-  build-depends:       base ^>= 4.15.1.0
+  build-depends:       base >= 4.14 && < 4.15
 
   ghc-options:         -Wall
                        -Wcompat
