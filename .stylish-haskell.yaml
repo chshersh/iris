@@ -48,7 +48,6 @@ language_extensions:
   - MultiParamTypeClasses
   - MultiWayIf
   - NamedFieldPuns
-  - NoImplicitPrelude
   - OverloadedStrings
   - QuasiQuotes
   - RecordWildCards

@@ -63,7 +63,14 @@ common common-options
 library
   import:              common-options
   hs-source-dirs:      src
-  exposed-modules:     Iris
+  exposed-modules:
+    Iris
+      Iris.App
+      Iris.Env
+
+  build-depends:
+    , mtl                  >= 2.2 && < 2.4
+    , optparse-applicative ^>= 0.17
 
 test-suite iris-test
   import:              common-options
