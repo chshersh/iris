@@ -3,7 +3,7 @@ Module                  : Iris
 Copyright               : (c) 2022 Dmitrii Kovanikov
 SPDX-License-Identifier : MPL-2.0
 Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
-Stability               : Stable
+Stability               : Experimental
 Portability             : Portable
 
 Haskell CLI framework
