@@ -76,7 +76,11 @@ library
 executable iris-example
   import:              common-options
   hs-source-dirs:      app
+
   main-is:             Main.hs
+  autogen-modules:     Paths_iris
+  other-modules:       Paths_iris
+
   build-depends:       iris
   ghc-options:         -threaded
                        -rtsopts

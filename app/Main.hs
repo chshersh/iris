@@ -3,6 +3,7 @@ module Main (main) where
 import Control.Monad.IO.Class (MonadIO (..))
 
 import qualified Iris
+import qualified Paths_iris as Autogen
 
 
 newtype App a = App
@@ -11,8 +12,12 @@ newtype App a = App
 
 appSettings :: Iris.CliEnvSettings () ()
 appSettings = Iris.defaultCliEnvSettings
-    { Iris.cliEnvSettingsHeaderDesc = "Iris usage example"
-    , Iris.cliEnvSettingsProgDesc   = "A simple grep utility"
+    { Iris.cliEnvSettingsHeaderDesc      = "Iris usage example"
+    , Iris.cliEnvSettingsProgDesc        = "A simple grep utility"
+    , Iris.cliEnvSettingsVersionSettings =
+        Just (Iris.defaultVersionSettings Autogen.version)
+            { Iris.versionSettingsMkDesc = \v -> "Iris Example v" <> v
+            }
     }
 
 app :: App ()
