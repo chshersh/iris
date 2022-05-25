@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 {- |
 Module                  : Iris.Env
 Copyright               : (c) 2022 Dmitrii Kovanikov
@@ -22,12 +24,20 @@ module Iris.Env
     , defaultVersionSettings
 
       -- * CLI application environment
+      -- ** Constructing
     , CliEnv (..)
     , mkCliEnv
+      -- ** Querying
+    , asksCliEnv
+    , asksAppEnv
     ) where
 
+import Control.Monad.Reader (MonadReader, asks)
 import Data.Kind (Type)
 import Data.Version (Version, showVersion)
+import System.IO (stdout)
+
+import Iris.Colour.Mode (ColourMode, handleColourMode)
 
 import qualified Options.Applicative as Opt
 
@@ -102,10 +112,13 @@ Has the following type parameters:
 -}
 data CliEnv (cmd :: Type) (appEnv :: Type) = CliEnv
     { -- | @since 0.0.0.0
-      cliEnvCmd    :: cmd
+      cliEnvCmd        :: cmd
 
       -- | @since 0.0.0.0
-    , cliEnvAppEnv :: appEnv
+    , cliEnvColourMode :: ColourMode
+
+      -- | @since 0.0.0.0
+    , cliEnvAppEnv     :: appEnv
     }
 
 {- |
@@ -118,9 +131,12 @@ mkCliEnv
     -> IO (CliEnv cmd appEnv)
 mkCliEnv CliEnvSettings{..} = do
     cmd <- Opt.execParser cmdParserInfo
+    colourMode <- handleColourMode stdout
+
     pure CliEnv
-        { cliEnvCmd    = cmd
-        , cliEnvAppEnv = cliEnvSettingsAppEnv
+        { cliEnvCmd        = cmd
+        , cliEnvColourMode = colourMode
+        , cliEnvAppEnv     = cliEnvSettingsAppEnv
         }
   where
     cmdParserInfo :: Opt.ParserInfo cmd
@@ -155,3 +171,24 @@ fullVersionP VersionSettings{..} = versionP <*> numericVersionP
        [ Opt.long "numeric-version"
        , Opt.help "Show only numeric application version"
        ]
+
+{- | Get a field from the global environment 'CliEnv'.
+
+@since 0.0.0.0
+-}
+asksCliEnv
+    :: MonadReader (CliEnv cmd appEnv) m
+    => (CliEnv cmd appEnv -> field)
+    -> m field
+asksCliEnv = asks
+
+{- | Get a field from custom application-specific environment
+@appEnv@.
+
+@since 0.0.0.0
+-}
+asksAppEnv
+    :: MonadReader (CliEnv cmd appEnv) m
+    => (appEnv -> field)
+    -> m field
+asksAppEnv getField = asksCliEnv (getField . cliEnvAppEnv)
