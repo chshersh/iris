@@ -31,9 +31,14 @@ appSettings = Iris.defaultCliEnvSettings
 app :: App ()
 app = do
     liftIO $ putStrLn "Hello from an Iris app!"
+
     Iris.putStdoutColouredLn
         (Colourista.formatWith [Colourista.yellow, Colourista.bold])
         "I'm yellow"
+
+    Iris.putStderrColouredLn
+        (Colourista.formatWith [Colourista.blueBg])
+        "I'm white on blue"
 
 main :: IO ()
 main = Iris.runCliApp appSettings $ unApp app

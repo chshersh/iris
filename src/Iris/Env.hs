@@ -35,7 +35,7 @@ module Iris.Env
 import Control.Monad.Reader (MonadReader, asks)
 import Data.Kind (Type)
 import Data.Version (Version, showVersion)
-import System.IO (stdout)
+import System.IO (stderr, stdout)
 
 import Iris.Colour.Mode (ColourMode, handleColourMode)
 
@@ -112,13 +112,16 @@ Has the following type parameters:
 -}
 data CliEnv (cmd :: Type) (appEnv :: Type) = CliEnv
     { -- | @since 0.0.0.0
-      cliEnvCmd        :: cmd
+      cliEnvCmd              :: cmd
 
       -- | @since 0.0.0.0
-    , cliEnvColourMode :: ColourMode
+    , cliEnvStdoutColourMode :: ColourMode
 
       -- | @since 0.0.0.0
-    , cliEnvAppEnv     :: appEnv
+    , cliEnvStderrColourMode :: ColourMode
+
+      -- | @since 0.0.0.0
+    , cliEnvAppEnv           :: appEnv
     }
 
 {- |
@@ -131,12 +134,14 @@ mkCliEnv
     -> IO (CliEnv cmd appEnv)
 mkCliEnv CliEnvSettings{..} = do
     cmd <- Opt.execParser cmdParserInfo
-    colourMode <- handleColourMode stdout
+    stdoutColourMode <- handleColourMode stdout
+    stderrColourMode <- handleColourMode stderr
 
     pure CliEnv
-        { cliEnvCmd        = cmd
-        , cliEnvColourMode = colourMode
-        , cliEnvAppEnv     = cliEnvSettingsAppEnv
+        { cliEnvCmd              = cmd
+        , cliEnvStdoutColourMode = stdoutColourMode
+        , cliEnvStderrColourMode = stderrColourMode
+        , cliEnvAppEnv           = cliEnvSettingsAppEnv
         }
   where
     cmdParserInfo :: Opt.ParserInfo cmd

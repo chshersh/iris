@@ -50,7 +50,7 @@ putStdoutColouredLn
     -> ByteString
     -> m ()
 putStdoutColouredLn formatWithColour str = do
-    colourMode <- asksCliEnv cliEnvColourMode
+    colourMode <- asksCliEnv cliEnvStdoutColourMode
     liftIO $ BS8.putStrLn $ case colourMode of
         DisableColour -> str
         EnableColour  -> formatWithColour str
@@ -76,7 +76,7 @@ putStderrColouredLn
     -> ByteString
     -> m ()
 putStderrColouredLn formatWithColour str = do
-    colourMode <- asksCliEnv cliEnvColourMode
+    colourMode <- asksCliEnv cliEnvStderrColourMode
     liftIO $ BS8.hPutStrLn stderr $ case colourMode of
         DisableColour -> str
         EnableColour  -> formatWithColour str
