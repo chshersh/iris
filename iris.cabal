@@ -67,6 +67,8 @@ library
   exposed-modules:
     Iris
       Iris.App
+      Iris.Cli
+        Iris.Cli.Version
       Iris.Colour
         Iris.Colour.Formatting
         Iris.Colour.Mode

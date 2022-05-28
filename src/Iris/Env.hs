@@ -16,12 +16,8 @@ Environment of a CLI app.
 
 module Iris.Env
     ( -- * Settings for the CLI app
-      -- ** Global CLI settings
       CliEnvSettings (..)
     , defaultCliEnvSettings
-      -- ** Application version settings
-    , VersionSettings (..)
-    , defaultVersionSettings
 
       -- * CLI application environment
       -- ** Constructing
@@ -34,9 +30,9 @@ module Iris.Env
 
 import Control.Monad.Reader (MonadReader, asks)
 import Data.Kind (Type)
-import Data.Version (Version, showVersion)
 import System.IO (stderr, stdout)
 
+import Iris.Cli.Version (VersionSettings, mkVersionParser)
 import Iris.Colour.Mode (ColourMode, handleColourMode)
 
 import qualified Options.Applicative as Opt
@@ -77,27 +73,6 @@ defaultCliEnvSettings = CliEnvSettings
     , cliEnvSettingsVersionSettings = Nothing
     }
 
-{- |
-
-@since 0.0.0.0
--}
-data VersionSettings = VersionSettings
-    { -- | @since 0.0.0.0
-      versionSettingsVersion :: Version
-
-      -- | @since 0.0.0.0
-    , versionSettingsMkDesc  :: String -> String
-    }
-
-{- |
-
-@since 0.0.0.0
--}
-defaultVersionSettings :: Version -> VersionSettings
-defaultVersionSettings version = VersionSettings
-    { versionSettingsVersion = version
-    , versionSettingsMkDesc  = id
-    }
 
 {- | CLI application environment. It contains default settings for
 every CLI app and parameter
@@ -155,27 +130,6 @@ mkCliEnv CliEnvSettings{..} = do
             , Opt.header cliEnvSettingsHeaderDesc
             , Opt.progDesc cliEnvSettingsProgDesc
             ]
-
-mkVersionParser :: Maybe VersionSettings -> Opt.Parser (a -> a)
-mkVersionParser = maybe (pure id) fullVersionP
-
-fullVersionP :: VersionSettings -> Opt.Parser (a -> a)
-fullVersionP VersionSettings{..} = versionP <*> numericVersionP
-  where
-    versionStr :: String
-    versionStr = showVersion versionSettingsVersion
-
-    versionP :: Opt.Parser (a -> a)
-    versionP = Opt.infoOption (versionSettingsMkDesc versionStr) $ mconcat
-       [ Opt.long "version"
-       , Opt.help "Show application version"
-       ]
-
-    numericVersionP :: Opt.Parser (a -> a)
-    numericVersionP = Opt.infoOption versionStr $ mconcat
-       [ Opt.long "numeric-version"
-       , Opt.help "Show only numeric application version"
-       ]
 
 {- | Get a field from the global environment 'CliEnv'.
 

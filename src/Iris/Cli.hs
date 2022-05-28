@@ -1,24 +1,18 @@
 {- |
-Module                  : Iris
+Module                  : Iris.Cli
 Copyright               : (c) 2022 Dmitrii Kovanikov
 SPDX-License-Identifier : MPL-2.0
 Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
 Stability               : Experimental
 Portability             : Portable
 
-Haskell CLI framework
+CLI options parsing.
 
 @since 0.0.0.0
 -}
 
-module Iris
-    ( module Iris.App
-    , module Iris.Cli
-    , module Iris.Colour
-    , module Iris.Env
+module Iris.Cli
+    ( module Iris.Cli.Version
     ) where
 
-import Iris.App
-import Iris.Cli
-import Iris.Colour
-import Iris.Env
+import Iris.Cli.Version
