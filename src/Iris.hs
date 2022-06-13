@@ -13,10 +13,14 @@ Haskell CLI framework
 
 module Iris
     ( module Iris.App
+    , module Iris.Browse
+    , module Iris.Cli
     , module Iris.Colour
     , module Iris.Env
     ) where
 
 import Iris.App
+import Iris.Browse
+import Iris.Cli
 import Iris.Colour
 import Iris.Env
