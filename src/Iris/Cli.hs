@@ -12,7 +12,9 @@ CLI options parsing.
 -}
 
 module Iris.Cli
-    ( module Iris.Cli.Version
+    ( module Iris.Cli.Browse
+    , module Iris.Cli.Version
     ) where
 
+import Iris.Cli.Browse
 import Iris.Cli.Version
