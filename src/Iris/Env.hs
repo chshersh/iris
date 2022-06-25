@@ -22,18 +22,24 @@ module Iris.Env
       -- * CLI application environment
       -- ** Constructing
     , CliEnv (..)
+    , CliEnvException (..)
+    , CliEnvError (..)
     , mkCliEnv
+
       -- ** Querying
     , asksCliEnv
     , asksAppEnv
     ) where
 
+import Control.Exception (Exception, throwIO)
 import Control.Monad.Reader (MonadReader, asks)
+import Data.Foldable (for_)
 import Data.Kind (Type)
 import System.IO (stderr, stdout)
 
 import Iris.Cli.Version (VersionSettings, mkVersionParser)
 import Iris.Colour.Mode (ColourMode, handleColourMode)
+import Iris.Tool (Tool, ToolCheckResult (..), checkTool)
 
 import qualified Options.Applicative as Opt
 
@@ -57,6 +63,9 @@ data CliEnvSettings (cmd :: Type) (appEnv :: Type) = CliEnvSettings
 
       -- | @since 0.0.0.0
     , cliEnvSettingsVersionSettings :: Maybe VersionSettings
+
+      -- | @since 0.0.0.0
+    , cliEnvSettingsRequiredTools   :: [Tool cmd]
     }
 
 
@@ -71,6 +80,7 @@ defaultCliEnvSettings = CliEnvSettings
     , cliEnvSettingsHeaderDesc      = "Simple CLI program"
     , cliEnvSettingsProgDesc        = "CLI tool build with iris - a Haskell CLI framework"
     , cliEnvSettingsVersionSettings = Nothing
+    , cliEnvSettingsRequiredTools   = []
     }
 
 
@@ -99,7 +109,20 @@ data CliEnv (cmd :: Type) (appEnv :: Type) = CliEnv
     , cliEnvAppEnv           :: appEnv
     }
 
+newtype CliEnvError
+    = CliEnvToolError ToolCheckResult
+    deriving stock (Show)
+    deriving newtype (Eq)
+
+newtype CliEnvException = CliEnvException
+    { unCliEnvException :: CliEnvError
+    } deriving stock (Show)
+      deriving newtype (Eq)
+      deriving anyclass (Exception)
+
 {- |
+
+__Throws:__ 'CliEnvException'
 
 @since 0.0.0.0
 -}
@@ -111,6 +134,11 @@ mkCliEnv CliEnvSettings{..} = do
     cmd <- Opt.execParser cmdParserInfo
     stdoutColourMode <- handleColourMode stdout
     stderrColourMode <- handleColourMode stderr
+
+    for_ cliEnvSettingsRequiredTools $ \tool ->
+        checkTool cmd tool >>= \case
+            ToolOk  -> pure ()
+            toolErr -> throwIO $ CliEnvException $ CliEnvToolError toolErr
 
     pure CliEnv
         { cliEnvCmd              = cmd

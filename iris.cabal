@@ -76,6 +76,7 @@ library
         Iris.Colour.Formatting
         Iris.Colour.Mode
       Iris.Env
+      Iris.Tool
 
   build-depends:
     , ansi-terminal        ^>= 0.11
@@ -84,6 +85,7 @@ library
     , mtl                   >= 2.2  && < 2.4
     , optparse-applicative ^>= 0.17
     , process              ^>= 1.6
+    , text                  >= 1.2 && < 2.1
 
 executable iris-example
   import:              common-options
@@ -107,7 +109,16 @@ test-suite iris-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  build-depends:       iris
+
+  other-modules:
+    Test.Iris
+      Test.Iris.Tool
+
+  build-depends:
+    , iris
+    , hspec ^>= 2.10
+    , text
+
   ghc-options:         -threaded
                        -rtsopts
                        -with-rtsopts=-N
