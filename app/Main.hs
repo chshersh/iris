@@ -20,12 +20,13 @@ newtype App a = App
 
 appSettings :: Iris.CliEnvSettings () ()
 appSettings = Iris.defaultCliEnvSettings
-    { Iris.cliEnvSettingsHeaderDesc      = "Iris usage example"
-    , Iris.cliEnvSettingsProgDesc        = "A simple grep utility"
+    { Iris.cliEnvSettingsHeaderDesc = "Iris usage example"
+    , Iris.cliEnvSettingsProgDesc = "A simple grep utility"
     , Iris.cliEnvSettingsVersionSettings =
         Just (Iris.defaultVersionSettings Autogen.version)
             { Iris.versionSettingsMkDesc = \v -> "Iris Example v" <> v
             }
+    , Iris.cliEnvSettingsRequiredTools = ["curl", "ghc"]
     }
 
 app :: App ()

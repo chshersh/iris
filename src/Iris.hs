@@ -17,6 +17,7 @@ module Iris
     , module Iris.Cli
     , module Iris.Colour
     , module Iris.Env
+    , module Iris.Tool
     ) where
 
 import Iris.App
@@ -24,3 +25,4 @@ import Iris.Browse
 import Iris.Cli
 import Iris.Colour
 import Iris.Env
+import Iris.Tool
