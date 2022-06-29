@@ -8,7 +8,7 @@ Portability             : Portable
 
 CLI options parsing for @--version@ and @--numeric-version@
 
-**Enabled with config**
+__Enabled with config__
 
 @since 0.0.0.0
 -}
@@ -52,9 +52,17 @@ defaultVersionSettings version = VersionSettings
     , versionSettingsMkDesc  = id
     }
 
+{- |
+
+@since 0.0.0.0
+-}
 mkVersionParser :: Maybe VersionSettings -> Opt.Parser (a -> a)
 mkVersionParser = maybe (pure id) fullVersionP
 
+{- |
+
+@since 0.0.0.0
+-}
 fullVersionP :: VersionSettings -> Opt.Parser (a -> a)
 fullVersionP VersionSettings{..} = versionP <*> numericVersionP
   where

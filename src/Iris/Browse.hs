@@ -24,16 +24,26 @@ import System.Info (os)
 import System.Process (callCommand, showCommandForUser)
 
 
-{- | Exception thrown by 'openInBrowser' if can't find a
-browser. Stores the current OS inside.
+{- | Exception thrown by 'openInBrowser'.
 
 @since 0.0.0.0
 -}
 newtype BrowseException
+    -- | Can't find a browser application. Stores the current OS inside.
+    --
+    -- @since 0.0.0.0
     = BrowserNotFoundException String
-    deriving stock    (Show)
-    deriving newtype  (Eq)
-    deriving anyclass (Exception)
+    deriving stock
+        ( Show  -- ^ @since 0.0.0.0
+        )
+
+    deriving newtype
+        ( Eq  -- ^ @since 0.0.0.0
+        )
+
+    deriving anyclass
+        ( Exception  -- ^ @since 0.0.0.0
+        )
 
 
 {- | Open a given file in a browser. The function has the following algorithm:

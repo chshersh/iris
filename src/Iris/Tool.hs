@@ -35,7 +35,10 @@ import qualified Data.Text as Text
 @since 0.0.0.0
 -}
 data Tool cmd = Tool
-    { toolName     :: Text
+    { -- | @since 0.0.0.0
+      toolName     :: Text
+
+      -- | @since 0.0.0.0
     , toolSelector :: Maybe (ToolSelector cmd)
     }
 
@@ -55,7 +58,10 @@ instance IsString (Tool cmd) where
 @since 0.0.0.0
 -}
 data ToolSelector cmd = ToolSelector
-    { toolSelectorFunction   :: cmd -> Text -> Bool
+    { -- | @since 0.0.0.0
+      toolSelectorFunction   :: cmd -> Text -> Bool
+
+      -- | @since 0.0.0.0
     , toolSelectorVersionArg :: Maybe Text
     }
 
@@ -91,7 +97,10 @@ data ToolCheckResult
     @since 0.0.0.0
     -}
     | ToolOk
-    deriving stock (Show, Eq)
+    deriving stock
+        ( Show  -- ^ @since 0.0.0.0
+        , Eq    -- ^ @since 0.0.0.0
+        )
 
 {- |
 

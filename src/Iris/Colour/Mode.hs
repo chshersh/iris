@@ -29,14 +29,25 @@ stored in 'Iris.Env.CliEnv'.
 @since 0.0.0.0
 -}
 data ColourMode
+    -- | @since 0.0.0.0
     = DisableColour
+
+    -- | @since 0.0.0.0
     | EnableColour
-    deriving stock (Show, Eq, Ord, Enum, Bounded)
+    deriving stock
+        ( Show     -- ^ @since 0.0.0.0
+        , Eq       -- ^ @since 0.0.0.0
+        , Ord      -- ^ @since 0.0.0.0
+        , Enum     -- ^ @since 0.0.0.0
+        , Bounded  -- ^ @since 0.0.0.0
+        )
 
 {- | Returns 'ColourMode' of a 'Handle'. You can use this function on
 output 'Handle's to find out whether they support colouring or
-now. Use this function like this to check whether you can print with
-colour to terminal:
+now.
+
+Use this function like this to check whether you can print with colour
+to terminal:
 
 @
 'handleColourMode' 'System.IO.stdout'
