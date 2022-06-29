@@ -109,16 +109,38 @@ data CliEnv (cmd :: Type) (appEnv :: Type) = CliEnv
     , cliEnvAppEnv           :: appEnv
     }
 
-newtype CliEnvError
-    = CliEnvToolError ToolCheckResult
-    deriving stock (Show)
-    deriving newtype (Eq)
+{- |
 
+@since 0.0.0.0
+-}
+newtype CliEnvError
+    -- | @since 0.0.0.0
+    = CliEnvToolError ToolCheckResult
+    deriving stock
+        ( Show  -- ^ @since 0.0.0.0
+        )
+
+    deriving newtype
+        ( Eq  -- ^ @since 0.0.0.0
+        )
+{- |
+
+@since 0.0.0.0
+-}
 newtype CliEnvException = CliEnvException
     { unCliEnvException :: CliEnvError
-    } deriving stock (Show)
-      deriving newtype (Eq)
-      deriving anyclass (Exception)
+    }
+    deriving stock
+        ( Show  -- ^ @since 0.0.0.0
+        )
+
+    deriving newtype
+        ( Eq  -- ^ @since 0.0.0.0
+        )
+
+    deriving anyclass
+        ( Exception  -- ^ @since 0.0.0.0
+        )
 
 {- |
 

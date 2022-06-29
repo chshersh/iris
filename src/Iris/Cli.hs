@@ -12,9 +12,19 @@ CLI options parsing.
 -}
 
 module Iris.Cli
-    ( module Iris.Cli.Browse
+    ( -- $browse
+      module Iris.Cli.Browse
+      -- $version
     , module Iris.Cli.Version
     ) where
 
 import Iris.Cli.Browse
 import Iris.Cli.Version
+
+{- $browse
+CLI parsers for @--browse@ flags.
+-}
+
+{- $version
+CLI parsers for @--version@ and @--numeric-version@ flags.
+-}

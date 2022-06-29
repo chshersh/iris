@@ -12,9 +12,19 @@ Functions to handle colouring of the output to terminal.
 -}
 
 module Iris.Colour
-    ( module Iris.Colour.Mode
+    ( -- $mode
+      module Iris.Colour.Mode
+      -- $formatting
     , module Iris.Colour.Formatting
     ) where
 
 import Iris.Colour.Formatting
 import Iris.Colour.Mode
+
+{- $mode
+Colouring mode in application.
+-}
+
+{- $formatting
+Formatting of Terminal output
+-}
