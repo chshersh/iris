@@ -4,11 +4,7 @@
 [![Hackage](https://img.shields.io/hackage/v/iris.svg?logo=haskell)](https://hackage.haskell.org/package/iris)
 [![MPL-2.0 license](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)"  srcset="img1.png">
-  <source media="(prefers-color-scheme: light)" srcset="img2.png">
-  <img alt="Shows an illustrated sun in light color mode and a moon with stars in dark color mode." src="img2.png">
-</picture>
+<<< IMAGE IS HERE >>>
 
 **Iris** is a Haskell framework for building CLI applications that follow
 [Command Line Interface Guidelines](https://clig.dev/).
