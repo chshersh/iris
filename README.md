@@ -106,7 +106,7 @@ will need to set it up with these steps:
 
 ## For contributors
 
-Check [CONTRIBUTING.md](https://github.com/chshersh/iris/blob/main/CONTRIBUTING.yml)
+Check [CONTRIBUTING.md](https://github.com/chshersh/iris/blob/main/CONTRIBUTING.md)
 for contributing guidelines.
 
 To build the project and run the tests, use `cabal`:
