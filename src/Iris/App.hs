@@ -21,6 +21,7 @@ module Iris.App
 
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Reader (MonadReader, ReaderT (..))
+import Control.Monad.IO.Unlift (MonadUnliftIO)
 
 import Iris.Env (CliEnv, CliEnvSettings, mkCliEnv)
 
@@ -41,6 +42,8 @@ newtype CliApp cmd appEnv a = CliApp
         , MonadIO
         -- ^ @since 0.0.0.0
         , MonadReader (CliEnv cmd appEnv)
+        -- ^ @since 0.0.0.0
+        , MonadUnliftIO
         -- ^ @since 0.0.0.0
         ) via ReaderT (CliEnv cmd appEnv) IO
 

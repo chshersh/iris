@@ -86,6 +86,7 @@ library
     , optparse-applicative ^>= 0.17
     , process              ^>= 1.6
     , text                  >= 1.2 && < 2.1
+    , unliftio-core        ^>= 0.2
 
 executable iris-example
   import:              common-options
