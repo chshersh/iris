@@ -53,9 +53,10 @@ implementation beforehand. However, there're still a few requirements:
 
 That's all so far!
 
-> ℹ️ **NOTE:** PRs are merged to the `main` branch using the "Squash
-> and merge" button. You can produce granular commit history to make
-> the review easier or if it's your
+> ℹ️ **NOTE:** PRs are merged to the `main` branch using the
+> "Squash and merge" button. You can produce granular commit history
+> to make the review easier or if it's your preferred workflow. But
+> all commits will be squashed when merged to `main`.
 
 ## Write access to the repository
 
