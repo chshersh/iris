@@ -1,0 +1,6 @@
+packages: .
+
+source-repository-package
+    type: git
+    location: https://github.com/uhbif19/colourista.git
+    tag: 8148a0446bf61814f79d6a0c497007fde72b31eb
