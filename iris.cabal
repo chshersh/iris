@@ -18,13 +18,14 @@ extra-doc-files:     README.md
                      CHANGELOG.md
 tested-with:         GHC == 8.10.7
                      GHC == 9.0.2
+                     GHC == 9.2.3
 
 source-repository head
   type:                git
   location:            https://github.com/chshersh/iris.git
 
 common common-options
-  build-depends:       base >= 4.14 && < 4.16
+  build-depends:       base >= 4.14 && < 4.17
 
   ghc-options:         -Wall
                        -Wcompat
@@ -46,6 +47,9 @@ common common-options
     ghc-options:       -Wunused-packages
   if impl(ghc >= 9.0)
     ghc-options:       -Winvalid-haddock
+  if impl(ghc >= 9.2)
+    ghc-options:       -Wredundant-bang-patterns
+                       -Woperator-whitespace
 
   default-language:    Haskell2010
   default-extensions:  ConstraintKinds
