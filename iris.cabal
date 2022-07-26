@@ -124,7 +124,7 @@ test-suite iris-test
 
   build-depends:
     , iris
-    , hspec ^>= 2.10
+    , hspec >= 2.9.7 && < 2.11
     , text
 
   ghc-options:         -threaded

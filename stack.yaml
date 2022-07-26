@@ -3,6 +3,3 @@ resolver: nightly-2022-07-23
 extra-deps:
   - github: uhbif19/colourista
     commit: 8148a0446bf61814f79d6a0c497007fde72b31eb
-  - hspec-2.10.0@sha256:2d1dc53e361998f002497b7222fdb700cc540b2aaf880e2619a0b5d54abb74e5,1712
-  - hspec-core-2.10.0@sha256:a5d7d3e7bbcf42e8def370d86ab08252821be6fb9d00dddb3c484973d7a6e801,6617
-  - hspec-discover-2.10.0@sha256:517d0892217539969c199f9cc30065db7bcd68ff5512095e4f94ff8ef35d1313,2166
