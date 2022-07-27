@@ -15,12 +15,23 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
         cabal: ["3.6"]
         ghc:
           - "8.10.7"
           - "9.0.2"
           - "9.2.3"
+        
+        exclude:
+          - os: macOS-latest
+            ghc: 8.10.7
+          - os: macOS-latest
+            ghc: 9.0.2
+          
+          - os: windows-latest
+            ghc: 8.10.7
+          - os: windows-latest
+            ghc: 9.0.2
 
     steps:
     - uses: actions/checkout@v3
