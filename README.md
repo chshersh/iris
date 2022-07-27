@@ -109,9 +109,30 @@ will need to set it up with these steps:
 Check [CONTRIBUTING.md](https://github.com/chshersh/iris/blob/main/CONTRIBUTING.md)
 for contributing guidelines.
 
-To build the project and run the tests, use `cabal`:
+## Building the project
+
+To build the project and run the tests locally, you can use either `cabal` or `stack`:
 
 ```shell
 cabal build all
 cabal test --enable-tests --test-show-details=direct
 ```
+
+or
+
+```shell
+stack build
+stack test
+```
+
+If this is your first time dealing with Haskell tooling, we recommend using GHCup (which you can get [here](https://www.haskell.org/ghcup/)) for the initial setup.
+
+During the installation, GHCup will suggest you installing all the necessary tools. If you have GHCup installed but miss some of the tooling for some reason, just enter
+
+```shell
+ghcup install <tool>
+```
+
+into the terminal.
+
+(Also, if you are using Linux or macOS, you may find `ghcup tui` command a more attractive option.)
