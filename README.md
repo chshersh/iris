@@ -115,7 +115,7 @@ To build the project and run the tests locally, you can use either `cabal` or `s
 
 ```shell
 cabal build all
-cabal test --enable-test --test-show-details=direct
+cabal test --enable-tests --test-show-details=direct
 ```
 
 or
