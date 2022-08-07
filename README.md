@@ -4,6 +4,12 @@
 [![Hackage](https://img.shields.io/hackage/v/iris.svg?logo=haskell)](https://hackage.haskell.org/package/iris)
 [![MPL-2.0 license](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="images/iris-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="images/iris-light.png">
+  <img alt="Iris changing her workflow and hair colour dependending on the time of day." src="images/iris-dark.png">
+</picture>
+
 **Iris** is a Haskell framework for building CLI applications that follow
 [Command Line Interface Guidelines](https://clig.dev/).
 
@@ -109,30 +115,56 @@ will need to set it up with these steps:
 Check [CONTRIBUTING.md](https://github.com/chshersh/iris/blob/main/CONTRIBUTING.md)
 for contributing guidelines.
 
-## Building the project
+## Development
 
-To build the project and run the tests locally, you can use either `cabal` or `stack`:
+To build the project and run the tests locally, you can use either
+`cabal` or `stack`.
+
+> See the [First time][#first-time] section if you don't have Haskell
+> development environment locally.
+
+### Cabal
+
+Build the project:
 
 ```shell
 cabal build all
+```
+
+Run all unit tests:
+
+```shell
 cabal test --enable-tests --test-show-details=direct
 ```
 
-or
+### Stack
+
+Build the project:
 
 ```shell
-stack build
+stack build --test --no-run-tests
+```
+
+Run all unit tests:
+
+```shell
 stack test
 ```
 
-If this is your first time dealing with Haskell tooling, we recommend using GHCup (which you can get [here](https://www.haskell.org/ghcup/)) for the initial setup.
+### First time
 
-During the installation, GHCup will suggest you installing all the necessary tools. If you have GHCup installed but miss some of the tooling for some reason, just enter
+If this is your first time dealing with Haskell tooling, we recommend
+using [GHCup](https://www.haskell.org/ghcup/).
+
+During the installation, GHCup will suggest you installing all the
+necessary tools. If you have GHCup installed but miss some of the
+tooling for some reason, type the following commands in the terminal:
 
 ```shell
-ghcup install <tool>
+ghcup install ghc 8.10.7
+ghcup set     ghc 8.10.7
+ghcup install cabal 3.6.2.0
 ```
 
-into the terminal.
-
-(Also, if you are using Linux or macOS, you may find `ghcup tui` command a more attractive option.)
+> If you are using Linux or macOS, you may find `ghcup tui` command a
+> more attractive option.
