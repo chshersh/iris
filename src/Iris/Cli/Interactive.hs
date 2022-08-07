@@ -21,7 +21,7 @@ import qualified Options.Applicative as Opt
 data InteractiveMode = Interactive | NonInteractive deriving stock Show
 
 
-{- | A CLI option parser for switching to non-interactive mode if the flag is parsed.
+{- | A CLI option parser for switching to non-interactive mode if the flag is passed.
 
 @since 0.0.0.0
 -}
