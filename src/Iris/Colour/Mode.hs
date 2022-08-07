@@ -44,9 +44,9 @@ data ColourMode
 
 {- | Returns 'ColourMode' of a 'Handle'. You can use this function on
 output 'Handle's to find out whether they support colouring or
-now.
+not.
 
-Use this function like this to check whether you can print with colour
+Use a function like this to check whether you can print with colour
 to terminal:
 
 @

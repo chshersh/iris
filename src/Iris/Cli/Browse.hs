@@ -18,7 +18,7 @@ module Iris.Cli.Browse
 
 import qualified Options.Applicative as Opt
 
-{- | A CLI option parse a boolean value if a file needs to be open in
+{- | A CLI option parser yields a boolean value if a file needs to be open in
 a browser.
 
 Use 'Iris.Browse.openInBrowser' to open the file of your choice in a
@@ -34,7 +34,7 @@ browseP description = Opt.switch $ mconcat
     , Opt.help description
     ]
 
-{- | A CLI option parser for a 'FilePath' that needs to be open wit
+{- | A CLI option parser for a 'FilePath' that needs to be open with a browser.
 
 Use 'Iris.Browse.openInBrowser' to open the passed file in a browser.
 
