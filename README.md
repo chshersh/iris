@@ -4,14 +4,17 @@
 [![Hackage](https://img.shields.io/hackage/v/iris.svg?logo=haskell)](https://hackage.haskell.org/package/iris)
 [![MPL-2.0 license](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)"  srcset="images/iris-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="images/iris-light.png">
-  <img alt="Iris changing her workflow and hair colour dependending on the time of day." src="images/iris-dark.png">
-</picture>
-
 **Iris** is a Haskell framework for building CLI applications that follow
 [Command Line Interface Guidelines](https://clig.dev/).
+
+> 🌈 Iris (/ˈaɪrɪs/) is a Greek goddess associated with communication, messages,
+> the rainbow, and new endeavors.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="https://raw.githubusercontent.com/chshersh/iris/main/images/iris-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/chshersh/iris/main/images/iris-light.png">
+  <img alt="Iris changing her workflow and hair colour dependending on the time of day." src="https://raw.githubusercontent.com/chshersh/iris/main/images/iris-dark-always.png">
+</picture>
 
 > ℹ️ **DISCLAIMER #1:** Currently, Iris is in experimental phase and
 > mostly for early adopters. It may lack documentation or have
@@ -45,17 +48,24 @@ Iris development is guided by the following principles:
    helpful as possible in using the framework.
 
    > **NOTE:** Currently, Iris may lack documentation but there's an
-   > ongoing effor to improve the situation.
+   > ongoing effort to improve the situation.
+
+🧱 Iris focuses solely on CLI applications. If you're interested in
+building TUI app with Haskell, check out
+[brick](https://hackage.haskell.org/package/brick).
 
 ## Features
 
-Iris offers the following features:
+CLI apps built with Iris offer the following features for end users:
 
-* Automatic detection of colouring support and colour-formatting functions
-* Standard CLI flags `--version` and `--numeric-version` (the latter
-  is helpful for detecting required tools versions)
+* Automatic detection of colouring support in the terminal
 * Ability to check required external tools if you need e.g. `curl` or
   `git` or for your app
+* Support for standard CLI options out-of-the-box:
+    * `--help`
+    * `--version`
+    * `--numeric-version`: helpful for detecting required tools versions
+    * `--no-input`: for disabling all interactive features
 * Utilities to open files in a browser
 
 ## How to use?
@@ -120,7 +130,7 @@ for contributing guidelines.
 To build the project and run the tests locally, you can use either
 `cabal` or `stack`.
 
-> See the [First time][#first-time] section if you don't have Haskell
+> See the [First time](#first-time) section if you don't have Haskell
 > development environment locally.
 
 ### Cabal
