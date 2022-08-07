@@ -13,7 +13,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)"  srcset="https://raw.githubusercontent.com/chshersh/iris/main/images/iris-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/chshersh/iris/main/images/iris-light.png">
-  <img alt="Iris changing her workflow and hair colour dependending on the time of day." src="https://raw.githubusercontent.com/chshersh/iris/main/images/iris-dark-always.png">
+  <img alt="Iris changing her workflow and hair colour depending on the time of day." src="https://raw.githubusercontent.com/chshersh/iris/main/images/iris-dark-always.png">
 </picture>
 
 > ℹ️ **DISCLAIMER #1:** Currently, Iris is in experimental phase and
@@ -60,7 +60,7 @@ CLI apps built with Iris offer the following features for end users:
 
 * Automatic detection of colouring support in the terminal
 * Ability to check required external tools if you need e.g. `curl` or
-  `git` or for your app
+  `git`
 * Support for standard CLI options out-of-the-box:
     * `--help`
     * `--version`
