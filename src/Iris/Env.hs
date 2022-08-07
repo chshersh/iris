@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ApplicativeDo #-}
 
 {- |
@@ -190,15 +189,15 @@ mkCliEnv CliEnvSettings{..} = do
     cmdParserInfo = Opt.info
         ( Opt.helper
         <*> mkVersionParser cliEnvSettingsVersionSettings
-        <*> parserOptionsP
+        <*> cmdP
         )
         $ mconcat
             [ Opt.fullDesc
             , Opt.header cliEnvSettingsHeaderDesc
             , Opt.progDesc cliEnvSettingsProgDesc
             ]
-    parserOptionsP :: Opt.Parser (Cmd cmd)
-    parserOptionsP = do
+    cmdP :: Opt.Parser (Cmd cmd)
+    cmdP = do
       cmdInteractiveMode <- interactiveModeP
       cmdCmd <- cliEnvSettingsCmdParser
 

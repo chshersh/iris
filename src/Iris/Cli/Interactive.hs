@@ -44,4 +44,5 @@ interactiveModeP = nonInteractiveP <|> pure Interactive
     nonInteractiveP :: Opt.Parser InteractiveMode
     nonInteractiveP = Opt.flag' NonInteractive $ mconcat
         [ Opt.long "no-input"
-        , Opt.help "Enter the terminal in non-interactive mode"]
+        , Opt.help "Enter the terminal in non-interactive mode"
+        ]
