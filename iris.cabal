@@ -16,9 +16,9 @@ category:            CLI,Framework
 build-type:          Simple
 extra-doc-files:     README.md
                      CHANGELOG.md
-tested-with:         GHC == 8.10.7
+tested-with:         GHC == 9.2.4
                      GHC == 9.0.2
-                     GHC == 9.2.3
+                     GHC == 8.10.7
 
 source-repository head
   type:                git
@@ -78,8 +78,8 @@ library
       Iris.Browse
       Iris.Cli
         Iris.Cli.Browse
-        Iris.Cli.Version
         Iris.Cli.Interactive
+        Iris.Cli.Version
       Iris.Colour
         Iris.Colour.Formatting
         Iris.Colour.Mode
