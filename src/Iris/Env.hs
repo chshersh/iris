@@ -42,7 +42,7 @@ import Data.Kind (Type)
 import System.IO (stderr, stdout)
 
 import Iris.Cli.Version (VersionSettings, mkVersionParser)
-import Iris.Cli.Interactive (InteractiveMode, interactP)
+import Iris.Cli.Interactive (InteractiveMode, interactiveModeP)
 import Iris.Colour.Mode (ColourMode, handleColourMode)
 import Iris.Tool (Tool, ToolCheckResult (..), checkTool)
 
@@ -150,15 +150,16 @@ newtype CliEnvException = CliEnvException
         ( Exception  -- ^ @since 0.0.0.0
         )
 
-{- |
+{- | 
 
-@since 0.0.0.0
+Wrapper around @cmd@ with additional predefined fields
 -}
 
-data ParserOptions (cmd :: Type) = ParserOptions
-    { cmdOption :: cmd
-    , interactiveOption :: InteractiveMode
+data Cmd (cmd :: Type) = Cmd
+    { cmdInteractiveMode :: InteractiveMode
+    , cmdCmd :: cmd
     }
+
 {- |
 
 __Throws:__ 'CliEnvException'
@@ -170,23 +171,24 @@ mkCliEnv
     .  CliEnvSettings cmd appEnv
     -> IO (CliEnv cmd appEnv)
 mkCliEnv CliEnvSettings{..} = do
-    (ParserOptions cmd interactiveMode) <- Opt.execParser cmdParserInfo
+    Cmd{..} <- Opt.execParser cmdParserInfo
     stdoutColourMode <- handleColourMode stdout
     stderrColourMode <- handleColourMode stderr
+
     for_ cliEnvSettingsRequiredTools $ \tool ->
-        checkTool cmd tool >>= \case
+        checkTool cmdCmd tool >>= \case
             ToolOk  -> pure ()
             toolErr -> throwIO $ CliEnvException $ CliEnvToolError toolErr
 
     pure CliEnv
-        { cliEnvCmd              = cmd
+        { cliEnvCmd              = cmdCmd
         , cliEnvStdoutColourMode = stdoutColourMode
         , cliEnvStderrColourMode = stderrColourMode
         , cliEnvAppEnv           = cliEnvSettingsAppEnv
-        , cliEnvInteractiveMode  = interactiveMode
+        , cliEnvInteractiveMode  = cmdInteractiveMode
         }
   where
-    cmdParserInfo :: Opt.ParserInfo (ParserOptions cmd)
+    cmdParserInfo :: Opt.ParserInfo (Cmd cmd)
     cmdParserInfo = Opt.info
         ( Opt.helper
         <*> mkVersionParser cliEnvSettingsVersionSettings
@@ -197,12 +199,12 @@ mkCliEnv CliEnvSettings{..} = do
             , Opt.header cliEnvSettingsHeaderDesc
             , Opt.progDesc cliEnvSettingsProgDesc
             ]
-    parserOptionsP :: Opt.Parser (ParserOptions cmd)
+    parserOptionsP :: Opt.Parser (Cmd cmd)
     parserOptionsP = do
-      cmdOption <- cliEnvSettingsCmdParser
-      interactiveOption <- interactP "Enter the terminal in non-interactive mode"
+      cmdInteractiveMode <- interactiveModeP
+      cmdCmd <- cliEnvSettingsCmdParser
 
-      pure $ ParserOptions{..}
+      pure Cmd{..}
 
 {- | Get a field from the global environment 'CliEnv'.
 
