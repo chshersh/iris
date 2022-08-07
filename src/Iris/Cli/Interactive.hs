@@ -12,7 +12,7 @@ Interative mode datatype and CLI parser.
 -}
 
 module Iris.Cli.Interactive
-    ( InteractiveMode
+    ( InteractiveMode (..)
     , interactP
     ) where
 
