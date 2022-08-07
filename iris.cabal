@@ -79,6 +79,7 @@ library
       Iris.Cli
         Iris.Cli.Browse
         Iris.Cli.Version
+        Iris.Cli.Interactive
       Iris.Colour
         Iris.Colour.Formatting
         Iris.Colour.Mode
