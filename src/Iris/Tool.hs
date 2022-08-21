@@ -82,16 +82,9 @@ defaultToolSelector = ToolSelector
 data ToolCheckResult
     {- |
 
-    @since 0.0.0.0
+    @since 0.0.0.1
     -}
-    = ToolNotFound Text
-
-    {- |
-
-    @since 0.0.0.0
-    -}
-    | ToolWrongVersion Text
-
+    = ToolError ToolCheckError
     {- |
 
     @since 0.0.0.0
@@ -104,11 +97,32 @@ data ToolCheckResult
 
 {- |
 
+@since 0.0.0.1
+-}
+data ToolCheckError
+    {- |
+
+    @since 0.0.0.1
+    -}
+    = ToolNotFound Text
+
+    {- |
+
+    @since 0.0.0.1
+    -}
+    | ToolWrongVersion Text
+    deriving stock
+        ( Show  -- ^ @since 0.0.0.1
+        , Eq    -- ^ @since 0.0.0.1
+        )
+
+{- |
+
 @since 0.0.0.0
 -}
 checkTool :: cmd -> Tool cmd -> IO ToolCheckResult
 checkTool cmd Tool{..} = findExecutable (Text.unpack toolName) >>= \case
-    Nothing  -> pure $ ToolNotFound toolName
+    Nothing  -> pure $ ToolError $ ToolNotFound toolName
     Just exe -> case toolSelector of
         Nothing               -> pure ToolOk
         Just ToolSelector{..} -> case toolSelectorVersionArg of
@@ -119,4 +133,4 @@ checkTool cmd Tool{..} = findExecutable (Text.unpack toolName) >>= \case
 
                 if toolSelectorFunction cmd version
                 then pure ToolOk
-                else pure $ ToolWrongVersion version
+                else pure $ ToolError $ ToolWrongVersion version
