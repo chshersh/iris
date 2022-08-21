@@ -41,7 +41,7 @@ import System.IO (stderr, stdout)
 import Iris.Cli.Version (VersionSettings, mkVersionParser)
 import Iris.Cli.Interactive (InteractiveMode, interactiveModeP)
 import Iris.Colour.Mode (ColourMode, handleColourMode)
-import Iris.Tool (Tool, ToolCheckResult (..), checkTool)
+import Iris.Tool (Tool, ToolCheckResult (..), checkTool, ToolCheckError (..))
 
 import qualified Options.Applicative as Opt
 
@@ -120,7 +120,7 @@ data CliEnv (cmd :: Type) (appEnv :: Type) = CliEnv
 -}
 newtype CliEnvError
     -- | @since 0.0.0.0
-    = CliEnvToolError ToolCheckResult
+    = CliEnvToolError ToolCheckError
     deriving stock
         ( Show  -- ^ @since 0.0.0.0
         )
@@ -175,7 +175,7 @@ mkCliEnv CliEnvSettings{..} = do
     for_ cliEnvSettingsRequiredTools $ \tool ->
         checkTool cmdCmd tool >>= \case
             ToolOk  -> pure ()
-            toolErr -> throwIO $ CliEnvException $ CliEnvToolError toolErr
+            (ToolCheckError toolErr) -> throwIO $ CliEnvException $ CliEnvToolError toolErr
 
     pure CliEnv
         { cliEnvCmd              = cmdCmd

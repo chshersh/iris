@@ -83,7 +83,7 @@ defaultToolSelector = ToolSelector
 data ToolCheckResult
     {- |
 
-    @since 0.0.0.1
+    @since x.x.x.x
     -}
     = ToolCheckError ToolCheckError
     {- |
@@ -98,23 +98,23 @@ data ToolCheckResult
 
 {- |
 
-@since 0.0.0.1
+@since x.x.x.x
 -}
 data ToolCheckError
     {- |
 
-    @since 0.0.0.1
+    @since x.x.x.x
     -}
     = ToolNotFound Text
 
     {- |
 
-    @since 0.0.0.1
+    @since x.x.x.x
     -}
     | ToolWrongVersion Text
     deriving stock
-        ( Show  -- ^ @since 0.0.0.1
-        , Eq    -- ^ @since 0.0.0.1
+        ( Show  -- ^ @since x.x.x.x
+        , Eq    -- ^ @since x.x.x.x
         )
 
 {- |
