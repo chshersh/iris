@@ -19,6 +19,7 @@ module Iris.Tool
 
       -- * Tool requirements check
     , ToolCheckResult (..)
+    , ToolCheckError (..)
     , checkTool
     ) where
 
@@ -82,16 +83,9 @@ defaultToolSelector = ToolSelector
 data ToolCheckResult
     {- |
 
-    @since 0.0.0.0
+    @since x.x.x.x
     -}
-    = ToolNotFound Text
-
-    {- |
-
-    @since 0.0.0.0
-    -}
-    | ToolWrongVersion Text
-
+    = ToolCheckError ToolCheckError
     {- |
 
     @since 0.0.0.0
@@ -104,11 +98,32 @@ data ToolCheckResult
 
 {- |
 
+@since x.x.x.x
+-}
+data ToolCheckError
+    {- |
+
+    @since x.x.x.x
+    -}
+    = ToolNotFound Text
+
+    {- |
+
+    @since x.x.x.x
+    -}
+    | ToolWrongVersion Text
+    deriving stock
+        ( Show  -- ^ @since x.x.x.x
+        , Eq    -- ^ @since x.x.x.x
+        )
+
+{- |
+
 @since 0.0.0.0
 -}
 checkTool :: cmd -> Tool cmd -> IO ToolCheckResult
 checkTool cmd Tool{..} = findExecutable (Text.unpack toolName) >>= \case
-    Nothing  -> pure $ ToolNotFound toolName
+    Nothing  -> pure $ ToolCheckError $ ToolNotFound toolName
     Just exe -> case toolSelector of
         Nothing               -> pure ToolOk
         Just ToolSelector{..} -> case toolSelectorVersionArg of
@@ -119,4 +134,4 @@ checkTool cmd Tool{..} = findExecutable (Text.unpack toolName) >>= \case
 
                 if toolSelectorFunction cmd version
                 then pure ToolOk
-                else pure $ ToolWrongVersion version
+                else pure $ ToolCheckError $ ToolWrongVersion version

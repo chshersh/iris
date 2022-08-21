@@ -5,7 +5,7 @@ import Data.Version (Version, makeVersion, parseVersion)
 import Test.Hspec (Spec, describe, it, shouldReturn, shouldSatisfy)
 import Text.ParserCombinators.ReadP (readP_to_S)
 
-import Iris.Tool (Tool (..), ToolCheckResult (..), ToolSelector (..), checkTool,
+import Iris.Tool (Tool (..), ToolCheckResult (..), ToolCheckError (..), ToolSelector (..), checkTool,
                   defaultToolSelector)
 
 import qualified Data.Text as Text
@@ -18,7 +18,7 @@ toolSpec = describe "Tool" $ do
 
     it "shouldn't find 'xxx_unknown_executable'" $ do
         checkTool () "xxx_unknown_executable"
-            `shouldReturn` ToolNotFound "xxx_unknown_executable"
+            `shouldReturn` ToolCheckError (ToolNotFound "xxx_unknown_executable")
 
     it "shouldn't find 'ghc' version 100" $ do
         let tool :: Tool ()
@@ -32,7 +32,7 @@ toolSpec = describe "Tool" $ do
                 }
 
         let isToolWrongVersion :: ToolCheckResult -> Bool
-            isToolWrongVersion (ToolWrongVersion _) = True
+            isToolWrongVersion (ToolCheckError (ToolWrongVersion _)) = True
             isToolWrongVersion _other               = False
 
         checkTool () tool >>= (`shouldSatisfy` isToolWrongVersion)
