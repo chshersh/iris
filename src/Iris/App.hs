@@ -23,7 +23,8 @@ import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Reader (MonadReader, ReaderT (..))
 import Control.Monad.IO.Unlift (MonadUnliftIO)
 
-import Iris.Env (CliEnv, CliEnvSettings, mkCliEnv)
+import Iris.Env (CliEnv, mkCliEnv)
+import Iris.Settings (CliEnvSettings)
 
 
 {- | Main monad for your CLI application.

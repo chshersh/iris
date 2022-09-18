@@ -16,10 +16,12 @@ module Iris.Cli
       module Iris.Cli.Browse
       -- $version
     , module Iris.Cli.Version
+    , module Iris.Cli.ParserInfo
     ) where
 
 import Iris.Cli.Browse
 import Iris.Cli.Version
+import Iris.Cli.ParserInfo
 
 {- $browse
 CLI parsers for @--browse@ flags.
