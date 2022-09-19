@@ -1,15 +1,14 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ApplicativeDo #-}
 
-module Iris.Cli.ParserInfo () where
+module Iris.Cli.ParserInfo (cmdParserInfo) where
 
-import Iris.Settings (CliEnvSettings (..))
+import Iris.Settings (CliEnvSettings (..), Cmd (..))
 
 import qualified Options.Applicative as Opt
-import qualified Iris.Env as Env
 import Iris.Cli.Version (mkVersionParser)
 import Iris.Cli.Interactive (interactiveModeP)
-cmdParserInfo :: forall cmd appEnv . CliEnvSettings cmd appEnv -> Opt.ParserInfo (Env.Cmd cmd)
+cmdParserInfo :: forall cmd appEnv . CliEnvSettings cmd appEnv -> Opt.ParserInfo (Cmd cmd)
 cmdParserInfo CliEnvSettings{..} = Opt.info
   ( Opt.helper
   <*> mkVersionParser cliEnvSettingsVersionSettings
@@ -21,9 +20,9 @@ cmdParserInfo CliEnvSettings{..} = Opt.info
       , Opt.progDesc cliEnvSettingsProgDesc
       ]
   where
-    cmdP :: Opt.Parser (Env.Cmd cmd)
+    cmdP :: Opt.Parser (Cmd cmd)
     cmdP = do
       cmdInteractiveMode <- interactiveModeP
       cmdCmd <- cliEnvSettingsCmdParser
 
-      pure Env.Cmd{..}
+      pure Cmd{..}

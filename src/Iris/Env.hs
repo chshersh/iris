@@ -35,10 +35,10 @@ import Data.Foldable (for_)
 import Data.Kind (Type)
 import System.IO (stderr, stdout)
 
-import Iris.Cli.Version (mkVersionParser)
-import Iris.Cli.Interactive (InteractiveMode, interactiveModeP)
+import Iris.Cli.ParserInfo (cmdParserInfo)
+import Iris.Cli.Interactive (InteractiveMode)
 import Iris.Colour.Mode (ColourMode, handleColourMode)
-import Iris.Settings (CliEnvSettings (..))
+import Iris.Settings (CliEnvSettings (..), Cmd (..))
 import Iris.Tool (ToolCheckResult (..), checkTool, ToolCheckError (..))
 
 import qualified Options.Applicative as Opt
@@ -104,16 +104,6 @@ newtype CliEnvException = CliEnvException
         ( Exception  -- ^ @since 0.0.0.0
         )
 
-{- | 
-
-Wrapper around @cmd@ with additional predefined fields
--}
-
-data Cmd (cmd :: Type) = Cmd
-    { cmdInteractiveMode :: InteractiveMode
-    , cmdCmd :: cmd
-    }
-
 {- |
 
 __Throws:__ 'CliEnvException'
@@ -124,8 +114,8 @@ mkCliEnv
     :: forall cmd appEnv
     .  CliEnvSettings cmd appEnv
     -> IO (CliEnv cmd appEnv)
-mkCliEnv CliEnvSettings{..} = do
-    Cmd{..} <- Opt.execParser cmdParserInfo
+mkCliEnv cliEnvSettings@CliEnvSettings{..} = do
+    Cmd{..} <- Opt.execParser $ cmdParserInfo cliEnvSettings
     stdoutColourMode <- handleColourMode stdout
     stderrColourMode <- handleColourMode stderr
 
@@ -141,24 +131,6 @@ mkCliEnv CliEnvSettings{..} = do
         , cliEnvAppEnv           = cliEnvSettingsAppEnv
         , cliEnvInteractiveMode  = cmdInteractiveMode
         }
-  where
-    cmdParserInfo :: Opt.ParserInfo (Cmd cmd)
-    cmdParserInfo = Opt.info
-        ( Opt.helper
-        <*> mkVersionParser cliEnvSettingsVersionSettings
-        <*> cmdP
-        )
-        $ mconcat
-            [ Opt.fullDesc
-            , Opt.header cliEnvSettingsHeaderDesc
-            , Opt.progDesc cliEnvSettingsProgDesc
-            ]
-    cmdP :: Opt.Parser (Cmd cmd)
-    cmdP = do
-      cmdInteractiveMode <- interactiveModeP
-      cmdCmd <- cliEnvSettingsCmdParser
-
-      pure Cmd{..}
     
 {- | Get a field from the global environment 'CliEnv'.
 
