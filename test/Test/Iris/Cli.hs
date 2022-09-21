@@ -21,15 +21,15 @@ cliSpec = describe "Cli Options" $ do
     it "help without version environment should output the options help and no-input and should not output the options version and numeric-version" $ do
         let parserInfo :: Opt.ParserInfo (Cmd ()) = cmdParserInfo defaultCliEnvSettings
         let result :: Opt.ParserResult (Cmd ()) = Opt.execParserPure parserPrefs parserInfo ["--help"]
-        validHelp result (\text -> helpHasOptions text ["--help", "--no-input"] && not (helpHasOptions text ["--version", "--numeric-version"]))
+        parseResultHandler result (\text -> helpHasOptions text ["--help", "--no-input"] && not (helpHasOptions text ["--version", "--numeric-version"]))
     it "help with version environment should output help, no-input options, version and numeric-version" $ do
         let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just (defaultVersionSettings Autogen.version)}
         let parserInfo :: Opt.ParserInfo  (Cmd ()) = cmdParserInfo cliEnvSettings
         let result :: Opt.ParserResult (Cmd ()) = Opt.execParserPure parserPrefs parserInfo ["--help"]
-        validHelp result (\text -> helpHasOptions text ["--help", "--no-input", "--version", "--numeric-version"])
+        parseResultHandler result (\text -> helpHasOptions text ["--help", "--no-input", "--version", "--numeric-version"])
         where
-            validHelp :: Opt.ParserResult (Cmd ()) -> (String -> Bool) -> Bool
-            validHelp result f =
+            parseResultHandler :: Opt.ParserResult (Cmd ()) -> (String -> Bool) -> Bool
+            parseResultHandler result f =
                 -- The help functionality is baked into optparse-applicative and presents itself as a ParserFailure.
                 case result of
                     Opt.Failure text -> f (show text)
