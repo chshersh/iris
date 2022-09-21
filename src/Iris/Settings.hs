@@ -16,25 +16,12 @@ module Iris.Settings
     ( -- * Settings for the CLI app
       CliEnvSettings (..)
     , defaultCliEnvSettings
-    , Cmd (..)
     ) where
 
 import Data.Kind (Type)
 import qualified Options.Applicative as Opt
-
 import Iris.Cli.Version (VersionSettings)
-import Iris.Cli.Interactive (InteractiveMode)
 import Iris.Tool (Tool)
-
-{- | 
-
-Wrapper around @cmd@ with additional predefined fields
--}
-
-data Cmd (cmd :: Type) = Cmd
-    { cmdInteractiveMode :: InteractiveMode
-    , cmdCmd :: cmd
-    }
 
 {- |
 

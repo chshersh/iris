@@ -78,6 +78,7 @@ library
       Iris.Browse
       Iris.Cli
         Iris.Cli.Browse
+        Iris.Cli.Cmd
         Iris.Cli.Interactive
         Iris.Cli.Version
         Iris.Cli.ParserInfo
@@ -125,6 +126,7 @@ test-suite iris-test
     Test.Iris
       Test.Iris.Tool
       Test.Iris.Cli
+    Paths_iris
       
 
   build-depends:
