@@ -24,6 +24,8 @@ appSettings = Iris.defaultCliEnvSettings
     , Iris.cliEnvSettingsProgDesc = "A simple grep utility"
     , Iris.cliEnvSettingsVersionSettings =
         Just (Iris.defaultVersionSettings Autogen.version)
+            { Iris.versionSettingsMkDesc = \v -> "Iris Example v" <> v
+            }
     , Iris.cliEnvSettingsRequiredTools = ["curl", "ghc"]
     }
 
