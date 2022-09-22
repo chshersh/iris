@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ApplicativeDo #-}
+
 {- |
 Module                  : Iris.Cli.ParserInfo
 Copyright               : (c) 2022 Dmitrii Kovanikov
@@ -6,22 +9,19 @@ Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
 Stability               : Experimental
 Portability             : Portable
 
-Parser
+Parser information for the default CLI parser.
 
 @since 0.0.0.0
 -}
 
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE ApplicativeDo #-}
-
 module Iris.Cli.ParserInfo (cmdParserInfo) where
 
-import Iris.Settings (CliEnvSettings (..))
 import Iris.Cli.Cmd ( Cmd (..) )
+import Iris.Cli.Interactive (interactiveModeP)
+import Iris.Settings (CliEnvSettings (..))
+import Iris.Cli.Version (mkVersionParser)
 
 import qualified Options.Applicative as Opt
-import Iris.Cli.Version (mkVersionParser)
-import Iris.Cli.Interactive (interactiveModeP)
 
 {- |
 

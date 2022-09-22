@@ -26,7 +26,6 @@ module Iris.Env
       -- ** Querying
     , asksCliEnv
     , asksAppEnv
-    , Cmd (..)
     ) where
 
 import Control.Exception (Exception, throwIO)

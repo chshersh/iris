@@ -6,9 +6,9 @@ Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
 Stability               : Experimental
 Portability             : Portable
 
-Environment of a CLI app.
+Settings of a CLI app environment.
 
-@since 0.0.0.0
+@since x.x.x.x
 -}
 
 

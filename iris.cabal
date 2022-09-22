@@ -80,8 +80,8 @@ library
         Iris.Cli.Browse
         Iris.Cli.Cmd
         Iris.Cli.Interactive
-        Iris.Cli.Version
         Iris.Cli.ParserInfo
+        Iris.Cli.Version
       Iris.Colour
         Iris.Colour.Formatting
         Iris.Colour.Mode

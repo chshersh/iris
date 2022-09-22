@@ -8,7 +8,7 @@ Portability             : Portable
 
 Wrapper around cmd.
 
-@since 0.0.0.0
+@since x.x.x.x
 -}
 
 module Iris.Cli.Cmd
