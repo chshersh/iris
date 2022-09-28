@@ -11,7 +11,7 @@ Wrapper around cmd.
 @since x.x.x.x
 -}
 
-module Iris.Cli.Cmd
+module Iris.Cli.Internal
     (
         Cmd (..)
     ) where

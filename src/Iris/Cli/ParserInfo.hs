@@ -16,7 +16,7 @@ Parser information for the default CLI parser.
 
 module Iris.Cli.ParserInfo (cmdParserInfo) where
 
-import Iris.Cli.Cmd ( Cmd (..) )
+import Iris.Cli.Internal ( Cmd (..) )
 import Iris.Cli.Interactive (interactiveModeP)
 import Iris.Settings (CliEnvSettings (..))
 import Iris.Cli.Version (mkVersionParser)

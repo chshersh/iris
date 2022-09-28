@@ -34,7 +34,7 @@ import Data.Foldable (for_)
 import Data.Kind (Type)
 import System.IO (stderr, stdout)
 
-import Iris.Cli.Cmd (Cmd (..))
+import Iris.Cli.Internal (Cmd (..))
 import Iris.Cli.ParserInfo (cmdParserInfo)
 import Iris.Cli.Interactive (InteractiveMode)
 import Iris.Colour.Mode (ColourMode, handleColourMode)

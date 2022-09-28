@@ -78,7 +78,7 @@ library
       Iris.Browse
       Iris.Cli
         Iris.Cli.Browse
-        Iris.Cli.Cmd
+        Iris.Cli.Internal
         Iris.Cli.Interactive
         Iris.Cli.ParserInfo
         Iris.Cli.Version
@@ -133,7 +133,7 @@ test-suite iris-test
     , iris
     , hspec >= 2.9.7 && < 2.11
     , text
-    , optparse-applicative ^>= 0.17
+    , optparse-applicative
 
   ghc-options:         -threaded
                        -rtsopts
