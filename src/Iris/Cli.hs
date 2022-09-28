@@ -14,15 +14,22 @@ CLI options parsing.
 module Iris.Cli
     ( -- $browse
       module Iris.Cli.Browse
+      -- $parserInfo
+    , module Iris.Cli.ParserInfo
       -- $version
-    , module Iris.Cli.Version
+    , module Iris.Cli.Version    
     ) where
 
 import Iris.Cli.Browse
 import Iris.Cli.Version
+import Iris.Cli.ParserInfo
 
 {- $browse
 CLI parsers for @--browse@ flags.
+-}
+
+{- $parserInfo
+  Info needed to create a CLI parser.
 -}
 
 {- $version

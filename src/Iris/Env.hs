@@ -16,13 +16,9 @@ Environment of a CLI app.
 
 
 module Iris.Env
-    ( -- * Settings for the CLI app
-      CliEnvSettings (..)
-    , defaultCliEnvSettings
-
-      -- * CLI application environment
+    ( -- * CLI application environment
       -- ** Constructing
-    , CliEnv (..)
+      CliEnv (..)
     , CliEnvException (..)
     , CliEnvError (..)
     , mkCliEnv
@@ -38,53 +34,14 @@ import Data.Foldable (for_)
 import Data.Kind (Type)
 import System.IO (stderr, stdout)
 
-import Iris.Cli.Version (VersionSettings, mkVersionParser)
-import Iris.Cli.Interactive (InteractiveMode, interactiveModeP)
+import Iris.Cli.Internal (Cmd (..))
+import Iris.Cli.ParserInfo (cmdParserInfo)
+import Iris.Cli.Interactive (InteractiveMode)
 import Iris.Colour.Mode (ColourMode, handleColourMode)
-import Iris.Tool (Tool, ToolCheckResult (..), checkTool, ToolCheckError (..))
+import Iris.Settings (CliEnvSettings (..))
+import Iris.Tool (ToolCheckResult (..), checkTool, ToolCheckError (..))
 
 import qualified Options.Applicative as Opt
-
-
-{- |
-
-@since 0.0.0.0
--}
-data CliEnvSettings (cmd :: Type) (appEnv :: Type) = CliEnvSettings
-    {  -- | @since 0.0.0.0
-      cliEnvSettingsCmdParser       :: Opt.Parser cmd
-
-      -- | @since 0.0.0.0
-    , cliEnvSettingsAppEnv          :: appEnv
-
-      -- | @since 0.0.0.0
-    , cliEnvSettingsHeaderDesc      :: String
-
-      -- | @since 0.0.0.0
-    , cliEnvSettingsProgDesc        :: String
-
-      -- | @since 0.0.0.0
-    , cliEnvSettingsVersionSettings :: Maybe VersionSettings
-
-      -- | @since 0.0.0.0
-    , cliEnvSettingsRequiredTools   :: [Tool cmd]
-    }
-
-
-{- |
-
-@since 0.0.0.0
--}
-defaultCliEnvSettings :: CliEnvSettings () ()
-defaultCliEnvSettings = CliEnvSettings
-    { cliEnvSettingsCmdParser       = pure ()
-    , cliEnvSettingsAppEnv          = ()
-    , cliEnvSettingsHeaderDesc      = "Simple CLI program"
-    , cliEnvSettingsProgDesc        = "CLI tool build with iris - a Haskell CLI framework"
-    , cliEnvSettingsVersionSettings = Nothing
-    , cliEnvSettingsRequiredTools   = []
-    }
-
 
 {- | CLI application environment. It contains default settings for
 every CLI app and parameter
@@ -147,16 +104,6 @@ newtype CliEnvException = CliEnvException
         ( Exception  -- ^ @since 0.0.0.0
         )
 
-{- | 
-
-Wrapper around @cmd@ with additional predefined fields
--}
-
-data Cmd (cmd :: Type) = Cmd
-    { cmdInteractiveMode :: InteractiveMode
-    , cmdCmd :: cmd
-    }
-
 {- |
 
 __Throws:__ 'CliEnvException'
@@ -167,8 +114,8 @@ mkCliEnv
     :: forall cmd appEnv
     .  CliEnvSettings cmd appEnv
     -> IO (CliEnv cmd appEnv)
-mkCliEnv CliEnvSettings{..} = do
-    Cmd{..} <- Opt.execParser cmdParserInfo
+mkCliEnv cliEnvSettings@CliEnvSettings{..} = do
+    Cmd{..} <- Opt.execParser $ cmdParserInfo cliEnvSettings
     stdoutColourMode <- handleColourMode stdout
     stderrColourMode <- handleColourMode stderr
 
@@ -184,25 +131,7 @@ mkCliEnv CliEnvSettings{..} = do
         , cliEnvAppEnv           = cliEnvSettingsAppEnv
         , cliEnvInteractiveMode  = cmdInteractiveMode
         }
-  where
-    cmdParserInfo :: Opt.ParserInfo (Cmd cmd)
-    cmdParserInfo = Opt.info
-        ( Opt.helper
-        <*> mkVersionParser cliEnvSettingsVersionSettings
-        <*> cmdP
-        )
-        $ mconcat
-            [ Opt.fullDesc
-            , Opt.header cliEnvSettingsHeaderDesc
-            , Opt.progDesc cliEnvSettingsProgDesc
-            ]
-    cmdP :: Opt.Parser (Cmd cmd)
-    cmdP = do
-      cmdInteractiveMode <- interactiveModeP
-      cmdCmd <- cliEnvSettingsCmdParser
-
-      pure Cmd{..}
-
+    
 {- | Get a field from the global environment 'CliEnv'.
 
 @since 0.0.0.0

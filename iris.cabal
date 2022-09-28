@@ -78,12 +78,15 @@ library
       Iris.Browse
       Iris.Cli
         Iris.Cli.Browse
+        Iris.Cli.Internal
         Iris.Cli.Interactive
+        Iris.Cli.ParserInfo
         Iris.Cli.Version
       Iris.Colour
         Iris.Colour.Formatting
         Iris.Colour.Mode
       Iris.Env
+      Iris.Settings
       Iris.Tool
 
   build-depends:
@@ -122,11 +125,15 @@ test-suite iris-test
   other-modules:
     Test.Iris
       Test.Iris.Tool
+      Test.Iris.Cli
+    Paths_iris
+      
 
   build-depends:
     , iris
     , hspec >= 2.9.7 && < 2.11
     , text
+    , optparse-applicative
 
   ghc-options:         -threaded
                        -rtsopts
