@@ -86,6 +86,7 @@ library
         Iris.Colour.Formatting
         Iris.Colour.Mode
       Iris.Env
+      Iris.IO
       Iris.Settings
       Iris.Tool
 
