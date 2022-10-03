@@ -131,7 +131,7 @@ mkCliEnv cliEnvSettings@CliEnvSettings{..} = do
         , cliEnvAppEnv           = cliEnvSettingsAppEnv
         , cliEnvInteractiveMode  = cmdInteractiveMode
         }
-    
+
 {- | Get a field from the global environment 'CliEnv'.
 
 @since 0.0.0.0
