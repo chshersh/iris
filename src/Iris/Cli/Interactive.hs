@@ -20,15 +20,15 @@ import Options.Applicative ( (<|>) )
 import qualified Options.Applicative as Opt
 
 {- Datatype for specifying if the terminal is interactive.
-    
+
 @since 0.0.0.0
 -}
 data InteractiveMode
     -- | @since 0.0.0.0
-    = Interactive 
+    = Interactive
     -- | @since 0.0.0.0
-    | NonInteractive 
-    deriving stock 
+    | NonInteractive
+    deriving stock
         ( Show       -- ^ @since 0.0.0.0
         , Eq         -- ^ @since 0.0.0.0
         )

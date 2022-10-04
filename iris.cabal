@@ -127,7 +127,7 @@ test-suite iris-test
       Test.Iris.Tool
       Test.Iris.Cli
     Paths_iris
-      
+
 
   build-depends:
     , iris
