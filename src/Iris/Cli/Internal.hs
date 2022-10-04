@@ -19,7 +19,7 @@ module Iris.Cli.Internal
 import Data.Kind (Type)
 import Iris.Cli.Interactive (InteractiveMode)
 
-{- | 
+{- |
 
 Wrapper around @cmd@ with additional predefined fields
 -}

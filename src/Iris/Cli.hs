@@ -17,7 +17,7 @@ module Iris.Cli
       -- $parserInfo
     , module Iris.Cli.ParserInfo
       -- $version
-    , module Iris.Cli.Version    
+    , module Iris.Cli.Version
     ) where
 
 import Iris.Cli.Browse
