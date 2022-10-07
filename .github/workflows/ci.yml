@@ -122,7 +122,7 @@ jobs:
         ./hlint-${HLINT_VERSION}/hlint src/ test/
 
   stan:
-    name: stan
+    name: stan / ghc ${{ env.GHC_VERSION }}
     runs-on: ubuntu-latest
     env:
       CABAL_VERSION: "3.6"
