@@ -50,6 +50,8 @@ common common-options
   if impl(ghc >= 9.2)
     ghc-options:       -Wredundant-bang-patterns
                        -Woperator-whitespace
+  if impl(ghc >= 9.4)
+    ghc-options:       -Wredundant-strictness-flags
 
   default-language:    Haskell2010
   default-extensions:  ConstraintKinds
