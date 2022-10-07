@@ -153,7 +153,7 @@ jobs:
       name: Cache ~/.cabal/store
       with:
         path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
-        key: ${{ runner.os }}-${{ env.GHC_VERSION }}-${{ hashFiles('cabal.project.freeze') }}
+        key: stan-${{ runner.os }}-${{ env.GHC_VERSION }}-${{ hashFiles('cabal.project.freeze') }}
 
     - name: Install dependencies
       run: |
