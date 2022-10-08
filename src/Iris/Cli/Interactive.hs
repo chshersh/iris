@@ -61,7 +61,7 @@ Use this function to check whether you can get input from the terminal:
 
 If the terminal is non interactive i.e. the program is run in a pipe, interactive mode is set to false no matter what
 
-@since 0.0.0.1
+@since x.x.x.x
 -}
 handleInteractiveMode :: InteractiveMode -> IO InteractiveMode
 handleInteractiveMode optionMode = do

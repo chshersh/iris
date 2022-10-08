@@ -10,11 +10,11 @@ import qualified Options.Applicative as Opt
 import qualified Paths_iris as Autogen
 import Iris.Cli (VersionSettings(versionSettingsMkDesc))
 import Iris.Cli.Interactive (handleInteractiveMode, InteractiveMode (..))
-import System.Environment (getEnvironment)
+import System.Environment (lookupEnv)
 
 
 checkCI :: IO Bool
-checkCI = (== Just "true") . lookup "CI" <$> getEnvironment
+checkCI = (== Just "true") <$> lookupEnv "CI"
 
 expectedHelpText :: String
 expectedHelpText =
