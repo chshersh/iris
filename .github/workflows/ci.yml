@@ -121,3 +121,60 @@ jobs:
         curl -L https://github.com/ndmitchell/hlint/releases/download/v${HLINT_VERSION}/hlint-${HLINT_VERSION}-x86_64-linux.tar.gz --output hlint.tar.gz
         tar -xvf hlint.tar.gz
         ./hlint-${HLINT_VERSION}/hlint src/ test/
+
+  stan:
+    name: stan
+    runs-on: ubuntu-latest
+    env:
+      CABAL_VERSION: "3.6"
+      # `stan` Github Release supports this version as of now. If we want to run stan on multiple
+      # GHC versions, we need to build `stan` from source.
+      GHC_VERSION: "8.10.1"
+      STAN_VERSION: "0.0.1.0"
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: haskell/actions/setup@v2.0
+      id: setup-haskell-cabal
+      name: Setup Haskell
+      with:
+        ghc-version: ${{ env.GHC_VERSION }}
+        cabal-version: ${{ env.CABAL_VERSION }}
+
+    - name: Configure
+      run: |
+        cabal configure --enable-tests --enable-benchmarks --enable-documentation --test-show-details=direct --write-ghc-environment-files=always
+
+    - name: Freeze
+      run: |
+        cabal freeze
+
+    - uses: actions/cache@v3
+      name: Cache ~/.cabal/store
+      with:
+        path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
+        key: stan-${{ runner.os }}-${{ env.GHC_VERSION }}-${{ hashFiles('cabal.project.freeze') }}
+
+    - name: Install dependencies
+      run: |
+        cabal build all --only-dependencies
+
+    - name: Build
+      run: |
+        cabal build all
+
+    - name: Download `stan`
+      run: |
+        curl --silent -L https://github.com/kowainik/stan/releases/latest/download/stan-$STAN_VERSION-Linux-ghc-$GHC_VERSION --output stan
+        chmod +x stan
+
+    - name: Run `stan`
+      run: |
+        ./stan report
+
+    - name: Upload HTML stan report artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: stan-report
+        path: stan.html
