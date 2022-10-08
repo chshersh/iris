@@ -19,8 +19,9 @@ module Iris.Cli.Interactive
 
 import Options.Applicative ( (<|>) )
 import qualified Options.Applicative as Opt
-import System.IO (Handle, stdin)
+import System.IO (stdin)
 import System.Console.ANSI
+import GHC.IO.Handle (hIsTerminalDevice)
 
 {- Datatype for specifying if the terminal is interactive.
 
@@ -50,7 +51,20 @@ interactiveModeP = nonInteractiveP <|> pure Interactive
         , Opt.help "Enter the terminal in non-interactive mode"
         ]
 
+{- | Forces non interactive mode when the terminal is not interactive
+
+Use this function to check whether you can get input from the terminal:
+
+@
+'handleInteractiveMode' 'requestedInteractiveMode'
+@
+
+If the terminal is non interactive i.e. the program is run in a pipe, interactive mode is set to false no matter what
+
+@since 0.0.0.1
+-}
 handleInteractiveMode :: InteractiveMode -> IO InteractiveMode
 handleInteractiveMode optionMode = do
-    supportsANSI <-  hSupportsANSI stdin
-    pure $ if supportsANSI then optionMode else NonInteractive
+    isTerminal <- hIsTerminalDevice stdin -- misleading on windows where some terminals are emulated
+    supportsANSI <-  hSupportsANSI stdin -- false on dumb terminal, better windows support
+    pure $ if supportsANSI || isTerminal  then optionMode else NonInteractive
