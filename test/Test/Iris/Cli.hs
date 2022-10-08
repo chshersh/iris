@@ -73,4 +73,3 @@ cliSpec = describe "Cli Options" $ do
                         show helpText `shouldBe` expected
                     Opt.Success _ -> expectationFailure "Expected 'Failure' but got Success "
                     Opt.CompletionInvoked completionResult -> expectationFailure $ "Expected 'Failure' but got: " <> show completionResult
-
