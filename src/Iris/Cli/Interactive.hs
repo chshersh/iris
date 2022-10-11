@@ -14,10 +14,13 @@ Interative mode datatype and CLI parser.
 module Iris.Cli.Interactive
     ( InteractiveMode (..)
     , interactiveModeP
+    , handleInteractiveMode
     ) where
 
 import Options.Applicative ( (<|>) )
 import qualified Options.Applicative as Opt
+import System.IO (stdin)
+import System.Console.ANSI
 
 {- Datatype for specifying if the terminal is interactive.
 
@@ -46,3 +49,20 @@ interactiveModeP = nonInteractiveP <|> pure Interactive
         [ Opt.long "no-input"
         , Opt.help "Enter the terminal in non-interactive mode"
         ]
+
+{- | Forces non interactive mode when the terminal is not interactive
+
+Use this function to check whether you can get input from the terminal:
+
+@
+'handleInteractiveMode' 'requestedInteractiveMode'
+@
+
+If the terminal is non interactive i.e. the program is run in a pipe, interactive mode is set to false no matter what
+
+@since x.x.x.x
+-}
+handleInteractiveMode :: InteractiveMode -> IO InteractiveMode
+handleInteractiveMode optionMode = do
+    supportsANSI <-  hSupportsANSI stdin
+    pure $ if supportsANSI then optionMode else NonInteractive

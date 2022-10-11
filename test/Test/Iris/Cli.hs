@@ -1,7 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Test.Iris.Cli (cliSpec) where
 
-import Test.Hspec (Spec, describe, it, shouldBe, expectationFailure)
+import Test.Hspec (Spec, describe, it, shouldBe, expectationFailure, shouldReturn)
 
 import Iris.Cli.ParserInfo (cmdParserInfo)
 import Iris.Settings (defaultCliEnvSettings, cliEnvSettingsVersionSettings)
@@ -9,7 +9,12 @@ import Iris.Cli.Version (defaultVersionSettings)
 import qualified Options.Applicative as Opt
 import qualified Paths_iris as Autogen
 import Iris.Cli (VersionSettings(versionSettingsMkDesc))
+import Iris.Cli.Interactive (handleInteractiveMode, InteractiveMode (..))
+import System.Environment (lookupEnv)
 
+
+checkCI :: IO Bool
+checkCI = (== Just "true") <$> lookupEnv "CI"
 
 expectedHelpText :: String
 expectedHelpText =
@@ -57,6 +62,11 @@ cliSpec = describe "Cli Options" $ do
         let parserInfo= cmdParserInfo cliEnvSettings
         let result = Opt.execParserPure parserPrefs parserInfo ["--numeric-version"]
         parseResultHandler result expectedNumericVersion
+    it "CI interactivity check" $ do
+        handleInteractiveMode NonInteractive `shouldReturn` NonInteractive
+        isCi <- checkCI
+        if isCi then handleInteractiveMode Interactive `shouldReturn` NonInteractive
+        else handleInteractiveMode Interactive `shouldReturn` Interactive
     it "--version returns correct version text" $ do
         let expectedVersionMkDescription = ("Version " ++)
         let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just $ (defaultVersionSettings Autogen.version) {versionSettingsMkDesc  = expectedVersionMkDescription}}
