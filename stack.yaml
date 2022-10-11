@@ -1,5 +1,4 @@
 resolver: nightly-2022-08-04
 
 extra-deps:
-  - github: uhbif19/colourista
-    commit: 8148a0446bf61814f79d6a0c497007fde72b31eb
+  - colourista-0.1.0.2
