@@ -1,16 +1,16 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Test.Iris.Cli (cliSpec, cliSpecParserConflicts) where
 
-import Test.Hspec (Spec, describe, it, shouldBe, expectationFailure, shouldReturn, Expectation)
+import Test.Hspec (Expectation, Spec, describe, expectationFailure, it, shouldBe, shouldReturn)
 
-import Iris.Cli.ParserInfo (cmdParserInfo)
-import Iris.Settings (CliEnvSettings(..), defaultCliEnvSettings)
-import Iris.Cli.Version (defaultVersionSettings)
+import Iris.Cli (VersionSettings (versionSettingsMkDesc))
+import Iris.Cli.Interactive (InteractiveMode (..), handleInteractiveMode)
 import Iris.Cli.Internal
+import Iris.Cli.ParserInfo (cmdParserInfo)
+import Iris.Cli.Version (defaultVersionSettings)
+import Iris.Settings (CliEnvSettings (..), defaultCliEnvSettings)
 import qualified Options.Applicative as Opt
 import qualified Paths_iris as Autogen
-import Iris.Cli (VersionSettings(versionSettingsMkDesc))
-import Iris.Cli.Interactive (handleInteractiveMode, InteractiveMode (..))
 import System.Environment (lookupEnv)
 
 
@@ -120,7 +120,7 @@ expectedErrorTextUserDefinedNoInputNoArg =
   \Usage: <iris-test> [--no-input] --no-input ARG\n\
   \\n\
   \  CLI tool build with iris - a Haskell CLI framework"
-         
+
 cliSpecParserConflicts :: Spec
 cliSpecParserConflicts = describe "Cli Parser Conflicts" $ do
     let parserPrefs  = Opt.defaultPrefs
@@ -152,7 +152,7 @@ cliSpecParserConflicts = describe "Cli Parser Conflicts" $ do
         let parserInfo = cmdParserInfo $ customParserSettings userDefinedNoInputOnCommand
         let result = Opt.execParserPure parserPrefs parserInfo ["--no-input","test-command"]
         parseResultHandlerSuccess result ["NonInteractive", "False"]
-     
+
 parseResultHandlerSuccess :: Show b => Opt.ParserResult (Cmd (UserDefinedParser b)) -> [String] -> Expectation
 parseResultHandlerSuccess parseResult expected =
     case parseResult of
@@ -162,7 +162,7 @@ parseResultHandlerSuccess parseResult expected =
             let userDefinedNoInput = show . noInteractive . cmdCmd $ a
             shouldBe [internalNoInput, userDefinedNoInput] expected
         Opt.CompletionInvoked completionResult -> expectationFailure $ "Expected 'Success' but got: " <> show completionResult
-        
+
 parseResultHandlerFailure :: Opt.ParserResult a -> String -> Expectation
 parseResultHandlerFailure parseResult expected =
     case parseResult of
