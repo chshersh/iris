@@ -1,7 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-module Test.Iris.Cli (cliSpec) where
+module Test.Iris.Cli (cliSpec, cliSpecParserConflicts) where
 
-import Test.Hspec (Spec, describe, it, shouldBe, expectationFailure, shouldReturn)
+import Test.Hspec (Spec, describe, it, shouldBe, expectationFailure, shouldReturn, Expectation)
 
 import Iris.Cli.ParserInfo (cmdParserInfo)
 import Iris.Settings (CliEnvSettings(..), defaultCliEnvSettings)
@@ -45,6 +45,36 @@ expectedHelpTextWithVersion =
 
 expectedNumericVersion :: String
 expectedNumericVersion = "0.0.0.0"
+
+cliSpec :: Spec
+cliSpec = describe "Cli Options" $ do
+    let parserPrefs  = Opt.defaultPrefs
+    it "help without version environment" $ do
+        let parserInfo = cmdParserInfo defaultCliEnvSettings
+        let result = Opt.execParserPure parserPrefs parserInfo ["--help"]
+        parseResultHandlerFailure result expectedHelpText
+    it "help with version environment" $ do
+        let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just (defaultVersionSettings Autogen.version)}
+        let parserInfo = cmdParserInfo cliEnvSettings
+        let result = Opt.execParserPure parserPrefs parserInfo ["--help"]
+        parseResultHandlerFailure result expectedHelpTextWithVersion
+    it "--numeric-version returns correct version" $ do
+        let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just (defaultVersionSettings Autogen.version)}
+        let parserInfo = cmdParserInfo cliEnvSettings
+        let result = Opt.execParserPure parserPrefs parserInfo ["--numeric-version"]
+        parseResultHandlerFailure result expectedNumericVersion
+    it "CI interactivity check" $ do
+        handleInteractiveMode NonInteractive `shouldReturn` NonInteractive
+        isCi <- checkCI
+        if isCi then handleInteractiveMode Interactive `shouldReturn` NonInteractive
+        else handleInteractiveMode Interactive `shouldReturn` Interactive
+    it "--version returns correct version text" $ do
+        let expectedVersionMkDescription = ("Version " ++)
+        let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just $ (defaultVersionSettings Autogen.version) {versionSettingsMkDesc  = expectedVersionMkDescription}}
+        let parserInfo = cmdParserInfo cliEnvSettings
+        let expectedVersion = expectedVersionMkDescription expectedNumericVersion
+        let result = Opt.execParserPure parserPrefs parserInfo ["--version"]
+        parseResultHandlerFailure result expectedVersion
 
 newtype UserDefinedParser a
   = UserDefinedParser { noInteractive :: a }
@@ -90,36 +120,10 @@ expectedErrorTextUserDefinedNoInputNoArg =
   \Usage: <iris-test> [--no-input] --no-input ARG\n\
   \\n\
   \  CLI tool build with iris - a Haskell CLI framework"
-
-cliSpec :: Spec
-cliSpec = describe "Cli Options" $ do
+         
+cliSpecParserConflicts :: Spec
+cliSpecParserConflicts = describe "Cli Parser Conflicts" $ do
     let parserPrefs  = Opt.defaultPrefs
-    it "help without version environment" $ do
-        let parserInfo = cmdParserInfo defaultCliEnvSettings
-        let result = Opt.execParserPure parserPrefs parserInfo ["--help"]
-        parseResultHandlerFailure result expectedHelpText
-    it "help with version environment" $ do
-        let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just (defaultVersionSettings Autogen.version)}
-        let parserInfo = cmdParserInfo cliEnvSettings
-        let result = Opt.execParserPure parserPrefs parserInfo ["--help"]
-        parseResultHandlerFailure result expectedHelpTextWithVersion
-    it "--numeric-version returns correct version" $ do
-        let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just (defaultVersionSettings Autogen.version)}
-        let parserInfo = cmdParserInfo cliEnvSettings
-        let result = Opt.execParserPure parserPrefs parserInfo ["--numeric-version"]
-        parseResultHandlerFailure result expectedNumericVersion
-    it "CI interactivity check" $ do
-        handleInteractiveMode NonInteractive `shouldReturn` NonInteractive
-        isCi <- checkCI
-        if isCi then handleInteractiveMode Interactive `shouldReturn` NonInteractive
-        else handleInteractiveMode Interactive `shouldReturn` Interactive
-    it "--version returns correct version text" $ do
-        let expectedVersionMkDescription = ("Version " ++)
-        let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just $ (defaultVersionSettings Autogen.version) {versionSettingsMkDesc  = expectedVersionMkDescription}}
-        let parserInfo = cmdParserInfo cliEnvSettings
-        let expectedVersion = expectedVersionMkDescription expectedNumericVersion
-        let result = Opt.execParserPure parserPrefs parserInfo ["--version"]
-        parseResultHandlerFailure result expectedVersion
     it "--no-input=someValue defined by user - arg provided" $ do
         let parserInfo = cmdParserInfo $ customParserSettings userDefinedNoInputOption
         let result = Opt.execParserPure parserPrefs parserInfo ["--no-input", argValue]
@@ -148,20 +152,23 @@ cliSpec = describe "Cli Options" $ do
         let parserInfo = cmdParserInfo $ customParserSettings userDefinedNoInputOnCommand
         let result = Opt.execParserPure parserPrefs parserInfo ["--no-input","test-command"]
         parseResultHandlerSuccess result ["NonInteractive", "False"]
-        where
-            parseResultHandlerFailure parseResult expected =
-                case parseResult of
-                    -- The help functionality is baked into optparse-applicative and presents itself as a ParserFailure.
-                    Opt.Failure (Opt.ParserFailure getFailure) -> do
-                        let (helpText, _exitCode, _int) = getFailure "<iris-test>"
-                        show helpText `shouldBe` expected
-                    Opt.Success _ -> expectationFailure "Expected 'Failure' but got 'Success' "
-                    Opt.CompletionInvoked completionResult -> expectationFailure $ "Expected 'Failure' but got: " <> show completionResult
-            parseResultHandlerSuccess parseResult expected =
-                case parseResult of
-                    Opt.Failure _ -> expectationFailure "Expected 'Success' but got 'Failure' "
-                    Opt.Success a -> do
-                      let internalNoInput = show $ cmdInteractiveMode a
-                      let userDefinedNoInput = show . noInteractive . cmdCmd $ a
-                      shouldBe [internalNoInput, userDefinedNoInput] expected
-                    Opt.CompletionInvoked completionResult -> expectationFailure $ "Expected 'Success' but got: " <> show completionResult
+     
+parseResultHandlerSuccess :: Show b => Opt.ParserResult (Cmd (UserDefinedParser b)) -> [String] -> Expectation
+parseResultHandlerSuccess parseResult expected =
+    case parseResult of
+        Opt.Failure _ -> expectationFailure "Expected 'Success' but got 'Failure' "
+        Opt.Success a -> do
+            let internalNoInput = show $ cmdInteractiveMode a
+            let userDefinedNoInput = show . noInteractive . cmdCmd $ a
+            shouldBe [internalNoInput, userDefinedNoInput] expected
+        Opt.CompletionInvoked completionResult -> expectationFailure $ "Expected 'Success' but got: " <> show completionResult
+        
+parseResultHandlerFailure :: Opt.ParserResult a -> String -> Expectation
+parseResultHandlerFailure parseResult expected =
+    case parseResult of
+        -- The help functionality is baked into optparse-applicative and presents itself as a ParserFailure.
+        Opt.Failure (Opt.ParserFailure getFailure) -> do
+            let (helpText, _exitCode, _int) = getFailure "<iris-test>"
+            show helpText `shouldBe` expected
+        Opt.Success _ -> expectationFailure "Expected 'Failure' but got 'Success' "
+        Opt.CompletionInvoked completionResult -> expectationFailure $ "Expected 'Failure' but got: " <> show completionResult
