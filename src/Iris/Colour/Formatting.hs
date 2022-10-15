@@ -97,7 +97,7 @@ This works especially well with the @colourista@ package:
     "my message"
 @
 
-@since 0.0.0.0
+@since x.x.x.x
 -}
 putStdoutColoured
     :: ( MonadReader (CliEnv cmd appEnv) m
@@ -124,7 +124,7 @@ This works especially well with the @colourista@ package:
     "my message"
 @
 
-@since 0.0.0.0
+@since x.x.x.x
 -}
 putStderrColoured
     :: ( MonadReader (CliEnv cmd appEnv) m
