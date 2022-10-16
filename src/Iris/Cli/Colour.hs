@@ -17,6 +17,7 @@ module Iris.Cli.Colour
     ) where
 
 import Control.Applicative ((<|>))
+import Data.Functor (($>))
 import qualified Options.Applicative as Opt
 
 
@@ -48,18 +49,15 @@ data ColourOption
 @since x.x.x.x
 -}
 colourModeP :: Opt.Parser ColourOption
-colourModeP =  colour <|> color <|> pure AutoColour
+colourModeP =  colour <|> nocoulor <|> pure AutoColour
     where
-        colour = Opt.option colourModeReader $ mconcat
-            [ Opt.long "colour"
-            , Opt.metavar "Colour_mode"
-            , Opt.help "Enable or disable colours"
-            ]
-        color = Opt.option colourModeReader $  Opt.long "color" <> Opt.internal
-        colourModeReader = Opt.str >>= readColourOption
-        readColourOption::String -> Opt.ReadM ColourOption
-        readColourOption = \case
-            "auto"   -> return AutoColour
-            "never"  -> return NeverColour
-            "always" -> return AlwaysColour
-            _        -> Opt.readerError "Accepted colour modes are 'always', 'never' and 'auto'."
+        colour = (
+                Opt.flag' AlwaysColour ( Opt.long "colour" <> Opt.help "Enable colours")
+            <|> Opt.flag' AlwaysColour ( Opt.long "color" <> Opt.internal)
+            ) $> AlwaysColour
+        nocoulor = (
+                Opt.flag' AlwaysColour ( Opt.long "no-colour" <> Opt.help "Disable colours")
+            <|> Opt.flag' AlwaysColour ( Opt.long "no-color" <> Opt.internal)
+            <|> Opt.flag' AlwaysColour ( Opt.long "disable-color" <> Opt.internal)
+            <|> Opt.flag' AlwaysColour ( Opt.long "disable-coulor" <> Opt.internal)
+            ) $> NeverColour
