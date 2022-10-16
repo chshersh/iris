@@ -5,14 +5,18 @@ import Test.Hspec (Expectation, Spec, describe, expectationFailure, it, shouldBe
 
 import Iris (CliEnvSettings (..))
 import Iris.Cli (VersionSettings (versionSettingsMkDesc))
+import Iris.Cli.Colour (ColourOption (..))
 import Iris.Cli.Interactive (InteractiveMode (..), handleInteractiveMode)
 import Iris.Cli.Internal
 import Iris.Cli.ParserInfo (cmdParserInfo)
 import Iris.Cli.Version (defaultVersionSettings)
+import Iris.Colour.Detect (detectColour)
+import Iris.Colour.Mode (ColourMode (..), actualHandleColourMode)
 import Iris.Settings (cliEnvSettingsVersionSettings, defaultCliEnvSettings)
 import qualified Options.Applicative as Opt
 import qualified Paths_iris as Autogen
-import System.Environment (lookupEnv)
+import System.Environment (lookupEnv, setEnv)
+import System.IO (stdout)
 
 
 checkCI :: IO Bool
@@ -22,21 +26,21 @@ expectedHelpText :: String
 expectedHelpText =
     "Simple CLI program\n\
     \\n\
-    \Usage: <iris-test> [--no-input] [--colour Colour mode]\n\
+    \Usage: <iris-test> [--no-input] [--colour Colour_mode]\n\
     \\n\
     \  CLI tool build with iris - a Haskell CLI framework\n\
     \\n\
     \Available options:\n\
     \  -h,--help                Show this help text\n\
     \  --no-input               Enter the terminal in non-interactive mode\n\
-    \  --colour Colour mode     Enable or disable colours"
+    \  --colour Colour_mode     Enable or disable colours"
 
 expectedHelpTextWithVersion :: String
 expectedHelpTextWithVersion =
     "Simple CLI program\n\
     \\n\
     \Usage: <iris-test> [--version] [--numeric-version] [--no-input] \n\
-    \                   [--colour Colour mode]\n\
+    \                   [--colour Colour_mode]\n\
     \\n\
     \  CLI tool build with iris - a Haskell CLI framework\n\
     \\n\
@@ -45,10 +49,13 @@ expectedHelpTextWithVersion =
     \  --version                Show application version\n\
     \  --numeric-version        Show only numeric application version\n\
     \  --no-input               Enter the terminal in non-interactive mode\n\
-    \  --colour Colour mode     Enable or disable colours"
+    \  --colour Colour_mode     Enable or disable colours"
 
 expectedNumericVersion :: String
 expectedNumericVersion = "0.0.0.0"
+
+clearAppEnv :: IO()
+clearAppEnv = mconcat $ setEnv <$> ["NO_COLOR","NO_COLOUR","MYAPP_NO_COLOR","MYAPP_NO_COLOUR"] <*> [""]
 
 cliSpec :: Spec
 cliSpec = describe "Cli Options" $ do
@@ -72,6 +79,36 @@ cliSpec = describe "Cli Options" $ do
         isCi <- checkCI
         if isCi then handleInteractiveMode Interactive `shouldReturn` NonInteractive
         else handleInteractiveMode Interactive `shouldReturn` Interactive
+    it "Applies base nocolour environment" $ do
+        clearAppEnv
+        detectColour (Just "MYAPP") `shouldReturn` False
+        setEnv "NO_COLOR" "TRUE"
+        detectColour (Just "MYAPP") `shouldReturn` True
+        detectColour Nothing `shouldReturn` True
+        clearAppEnv
+        setEnv "NO_COLOUR" "TRUE"
+        detectColour (Just "MYAPP") `shouldReturn` True
+        detectColour Nothing `shouldReturn` True
+    it "Applies app specific nocolour environment" $ do
+        clearAppEnv
+        detectColour (Just "MYAPP") `shouldReturn` False
+        setEnv "MYAPP_NO_COLOR" "TRUE"
+        detectColour (Just "MYAPP") `shouldReturn` True
+        detectColour Nothing `shouldReturn` False
+        clearAppEnv
+        setEnv "MYAPP_NO_COLOUR" "TRUE"
+        detectColour (Just "MYAPP") `shouldReturn` True
+        detectColour Nothing `shouldReturn` False
+    it "CI colour check" $ do
+        isCi <- checkCI
+        clearAppEnv
+        let ciColour = if isCi then DisableColour else EnableColour
+        actualHandleColourMode (Just "MYAPP") NeverColour stdout `shouldReturn` DisableColour
+        actualHandleColourMode (Just "MYAPP") AlwaysColour stdout `shouldReturn` ciColour
+        actualHandleColourMode (Just "MYAPP") AutoColour stdout `shouldReturn` ciColour
+        setEnv "NO_COLOUR" "TRUE"
+        actualHandleColourMode (Just "MYAPP") AutoColour stdout `shouldReturn` DisableColour
+        actualHandleColourMode (Just "MYAPP") AlwaysColour stdout `shouldReturn` ciColour
     it "--version returns correct version text" $ do
         let expectedVersionMkDescription = ("Version " ++)
         let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just $ (defaultVersionSettings Autogen.version) {versionSettingsMkDesc  = expectedVersionMkDescription}}

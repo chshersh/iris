@@ -66,6 +66,7 @@ CLI apps built with Iris offer the following features for end users:
     * `--version`
     * `--numeric-version`: helpful for detecting required tools versions
     * `--no-input`: for disabling all interactive features
+    * `--colour Colour_mode`: to set the colour mode. Can be `never`, `always` or `auto`
 * Utilities to open files in a browser
 
 ## How to use?

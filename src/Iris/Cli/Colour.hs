@@ -52,7 +52,7 @@ colourModeP =  colour <|> color <|> pure AutoColour
     where
         colour = Opt.option colourModeReader $ mconcat
             [ Opt.long "colour"
-            , Opt.metavar "Colour mode"
+            , Opt.metavar "Colour_mode"
             , Opt.help "Enable or disable colours"
             ]
         color = Opt.option colourModeReader $  Opt.long "color" <> Opt.internal

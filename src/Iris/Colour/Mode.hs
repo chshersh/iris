@@ -84,8 +84,8 @@ actualHandleColourMode app colourOption handle = do
         (DisableColour,_,_) -> DisableColour
         (_,AlwaysColour,_)  -> EnableColour
         (_,NeverColour,_)   -> DisableColour
-        (_,_,True)          -> EnableColour
-        (_,_,False)         -> DisableColour
+        (_,_,True)          -> DisableColour
+        (_,_,False)         -> EnableColour
 
 {-
 ------------------------
