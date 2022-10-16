@@ -90,6 +90,8 @@ library
       Iris.Browse
       Iris.Cli
         Iris.Cli.Browse
+        Iris.Cli.Colour
+          Iris.Colour.Detect
         Iris.Cli.Internal
         Iris.Cli.Interactive
         Iris.Cli.ParserInfo
@@ -100,7 +102,6 @@ library
       Iris.Env
       Iris.Settings
       Iris.Tool
-
   build-depends:
     , ansi-terminal        ^>= 0.11
     , directory            ^>= 1.3

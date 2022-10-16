@@ -16,6 +16,7 @@ colouring.
 module Iris.Colour.Mode
     ( ColourMode (..)
     , handleColourMode
+    , actualHandleColourMode
     ) where
 
 import Iris.Cli.Colour
@@ -44,9 +45,9 @@ data ColourMode
         , Bounded  -- ^ @since 0.0.0.0
         )
 
-{- | Returns 'ColourMode' of a 'Handle'. You can use this function on
-output 'Handle's to find out whether they support colouring or
-not.
+{- | Returns 'ColourMode' of a 'Handle' ignoring environment and CLI options.
+You can use this function on output 'Handle's to find out whether they support
+colouring or not.
 
 Use a function like this to check whether you can print with colour
 to terminal:
@@ -57,16 +58,34 @@ to terminal:
 
 @since 0.0.0.0
 -}
-handleColourMode :: Maybe String -> ColourOption -> Handle ->  IO ColourMode
-handleColourMode app colourOption handle = do
+handleColourMode :: Handle -> IO ColourMode
+handleColourMode handle = do
     supportsANSI <- hSupportsANSIColor handle
+    pure $ if supportsANSI then EnableColour else DisableColour
+
+{- | Returns 'ColourMode' of a 'Handle' accounting for environment and CLI
+options. You can use this function on output 'Handle's to find out whether
+they support colouring or not.
+
+Use a function like this to check whether you can print with colour
+to terminal:
+
+@
+'handleColourMode' '(Just myappname)' 'AutoColour' 'System.IO.stdout'
+@
+
+@since x.x.x.x
+-}
+actualHandleColourMode :: Maybe String -> ColourOption -> Handle ->  IO ColourMode
+actualHandleColourMode app colourOption handle = do
+    handleMode <- handleColourMode handle
     colourDisabled <- detectColour app
-    pure $ case (supportsANSI,colourOption,colourDisabled) of
-        (False,_,_)        -> DisableColour
-        (_,AlwaysColour,_) -> EnableColour
-        (_,NeverColour,_)  -> DisableColour
-        (_,_,True)         -> EnableColour
-        (_,_,False)        -> DisableColour
+    pure $ case (handleMode,colourOption,colourDisabled) of
+        (DisableColour,_,_) -> DisableColour
+        (_,AlwaysColour,_)  -> EnableColour
+        (_,NeverColour,_)   -> DisableColour
+        (_,_,True)          -> EnableColour
+        (_,_,False)         -> DisableColour
 
 {-
 ------------------------

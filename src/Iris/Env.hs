@@ -37,7 +37,7 @@ import System.IO (stderr, stdout)
 import Iris.Cli.Interactive (InteractiveMode, handleInteractiveMode)
 import Iris.Cli.Internal (Cmd (..))
 import Iris.Cli.ParserInfo (cmdParserInfo)
-import Iris.Colour.Mode (ColourMode, handleColourMode)
+import Iris.Colour.Mode (ColourMode, actualHandleColourMode)
 import Iris.Settings (CliEnvSettings (..))
 import Iris.Tool (ToolCheckError (..), ToolCheckResult (..), checkTool)
 
@@ -116,8 +116,8 @@ mkCliEnv
     -> IO (CliEnv cmd appEnv)
 mkCliEnv cliEnvSettings@CliEnvSettings{..} = do
     Cmd{..} <- Opt.execParser $ cmdParserInfo cliEnvSettings
-    stdoutColourMode <- handleColourMode cliEnvSettingsAppName cmdColourOption stdout
-    stderrColourMode <- handleColourMode cliEnvSettingsAppName cmdColourOption stderr
+    stdoutColourMode <- actualHandleColourMode cliEnvSettingsAppName cmdColourOption stdout
+    stderrColourMode <- actualHandleColourMode cliEnvSettingsAppName cmdColourOption stderr
     interactive <- handleInteractiveMode cmdInteractiveMode
 
     for_ cliEnvSettingsRequiredTools $ \tool ->
