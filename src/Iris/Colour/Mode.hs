@@ -18,6 +18,8 @@ module Iris.Colour.Mode
     , handleColourMode
     ) where
 
+import Iris.Cli.Colour
+import Iris.Colour.Detect (detectColour)
 import System.Console.ANSI (hSupportsANSIColor)
 import System.IO (Handle)
 
@@ -55,10 +57,16 @@ to terminal:
 
 @since 0.0.0.0
 -}
-handleColourMode :: Handle -> IO ColourMode
-handleColourMode handle = do
+handleColourMode :: Maybe String -> ColourOption -> Handle ->  IO ColourMode
+handleColourMode app colourOption handle = do
     supportsANSI <- hSupportsANSIColor handle
-    pure $ if supportsANSI then EnableColour else DisableColour
+    colourDisabled <- detectColour app
+    pure $ case (supportsANSI,colourOption,colourDisabled) of
+        (False,_,_)        -> DisableColour
+        (_,AlwaysColour,_) -> EnableColour
+        (_,NeverColour,_)  -> DisableColour
+        (_,_,True)         -> EnableColour
+        (_,_,False)        -> DisableColour
 
 {-
 ------------------------

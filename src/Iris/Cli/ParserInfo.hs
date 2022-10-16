@@ -1,5 +1,5 @@
+{-# LANGUAGE ApplicativeDo    #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE ApplicativeDo #-}
 
 {- |
 Module                  : Iris.Cli.ParserInfo
@@ -16,11 +16,12 @@ Parser information for the default CLI parser.
 
 module Iris.Cli.ParserInfo (cmdParserInfo) where
 
-import Iris.Cli.Internal ( Cmd (..) )
 import Iris.Cli.Interactive (interactiveModeP)
-import Iris.Settings (CliEnvSettings (..))
+import Iris.Cli.Internal (Cmd (..))
 import Iris.Cli.Version (mkVersionParser)
+import Iris.Settings (CliEnvSettings (..))
 
+import Iris.Cli.Colour (colourModeP)
 import qualified Options.Applicative as Opt
 
 {- |
@@ -44,5 +45,6 @@ cmdParserInfo CliEnvSettings{..} = Opt.info
     cmdP = do
       cmdInteractiveMode <- interactiveModeP
       cmdCmd <- cliEnvSettingsCmdParser
+      cmdColourOption <- colourModeP
 
       pure Cmd{..}
