@@ -15,6 +15,12 @@ Initial release prepared by [@chshersh](https://github.com/chshersh).
 
 ### Added
 
+- [#22](https://github.com/chshersh/iris/issues/22):
+  Add CLI options to handle colouring
+  (by [@marcellourbani](https://github.com/marcellourbani))
+- [#58](https://github.com/chshersh/iris/issues/58):
+  Detect non-interactive terminals automatically
+  (by [@marcellourbani](https://github.com/marcellourbani))
 - [#34](https://github.com/chshersh/iris/issues/34):
   Add the `--no-input` CLI option for disabling interactivity
   (by [@charrsky](https://github.com/charrsky))
