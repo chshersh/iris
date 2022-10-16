@@ -43,6 +43,7 @@ data CliEnvSettings (cmd :: Type) (appEnv :: Type) = CliEnvSettings
       -- | @since 0.0.0.0
     , cliEnvSettingsVersionSettings :: Maybe VersionSettings
 
+    , cliEnvSettingsAppName :: Maybe String
       -- | @since 0.0.0.0
     , cliEnvSettingsRequiredTools   :: [Tool cmd]
     }
@@ -59,5 +60,6 @@ defaultCliEnvSettings = CliEnvSettings
     , cliEnvSettingsHeaderDesc      = "Simple CLI program"
     , cliEnvSettingsProgDesc        = "CLI tool build with iris - a Haskell CLI framework"
     , cliEnvSettingsVersionSettings = Nothing
+    , cliEnvSettingsAppName         = Nothing
     , cliEnvSettingsRequiredTools   = []
     }
