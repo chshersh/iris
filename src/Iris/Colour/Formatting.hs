@@ -16,6 +16,8 @@ Helper functions to print with colouring.
 module Iris.Colour.Formatting
     ( putStdoutColouredLn
     , putStderrColouredLn
+    , putStdoutColoured
+    , putStderrColoured
     ) where
 
 import Control.Monad.IO.Class (MonadIO (..))
@@ -27,6 +29,7 @@ import System.IO (stderr)
 import Iris.Colour.Mode (ColourMode (..))
 import Iris.Env (CliEnv (..), asksCliEnv)
 
+import qualified Data.Text.IO as TIO
 
 {- | Print 'Text' to 'System.IO.stdout' by providing a custom
 formatting function.
@@ -77,5 +80,59 @@ putStderrColouredLn
 putStderrColouredLn formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStderrColourMode
     liftIO $ T.hPutStrLn stderr $ case colourMode of
+        DisableColour -> str
+        EnableColour  -> formatWithColour str
+
+{- | Print 'Text' to 'System.IO.stdout' by providing a custom
+formatting function. Doesn't breaks output line that differs from
+`putStdoutColouredLn`
+
+This works especially well with the @colourista@ package:
+
+@
+'putStdoutColoured'
+    (Colourista.formatWith [Colourista.bold, Colourista.green])
+    "my message"
+@
+
+@since x.x.x.x
+-}
+putStdoutColoured
+    :: ( MonadReader (CliEnv cmd appEnv) m
+       , MonadIO m
+       )
+    => (Text -> Text)
+    -> Text
+    -> m ()
+putStdoutColoured formatWithColour str = do
+    colourMode <- asksCliEnv cliEnvStdoutColourMode
+    liftIO $ TIO.putStr $ case colourMode of
+        DisableColour -> str
+        EnableColour  -> formatWithColour str
+
+{- | Print 'Text' to 'System.IO.stderr' by providing a custom
+formatting function. Doesn't breaks output line that differs from
+`putStderrColouredLn`
+
+This works especially well with the @colourista@ package:
+
+@
+'putStderrColoured'
+    (Colourista.formatWith [Colourista.bold, Colourista.green])
+    "my message"
+@
+
+@since x.x.x.x
+-}
+putStderrColoured
+    :: ( MonadReader (CliEnv cmd appEnv) m
+       , MonadIO m
+       )
+    => (Text -> Text)
+    -> Text
+    -> m ()
+putStderrColoured formatWithColour str = do
+    colourMode <- asksCliEnv cliEnvStderrColourMode
+    liftIO $ TIO.hPutStr stderr $ case colourMode of
         DisableColour -> str
         EnableColour  -> formatWithColour str
