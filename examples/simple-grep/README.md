@@ -15,21 +15,35 @@ And will give the following result output:
 
 Starting grepping 🔥 
 
-file name: iris.cabal 
-2:name:                iris
-7:    See [README.md](https://github.com/chshersh/iris#iris) for more details.
-8:homepage:            https://github.com/chshersh/iris
-9:bug-reports:         https://github.com/chshersh/iris/issues
-26:  location:            https://github.com/chshersh/iris.git
-79:  build-depends:       , iris
-119:  autogen-modules:     Paths_iris
-120:  other-modules:       Paths_iris
-123:     , iris
-136:  autogen-modules:     Paths_iris
-137:  other-modules:       Paths_iris
-150:test-suite iris-test
-160:    Paths_iris
-164:    , iris
+ file name: iris.cabal 
+ 2:
+name:                iris
+ 7:
+    See [README.md](https://github.com/chshersh/iris#iris) for more details.
+ 8:
+homepage:            https://github.com/chshersh/iris
+ 9:
+bug-reports:         https://github.com/chshersh/iris/issues
+ 26:
+  location:            https://github.com/chshersh/iris.git
+ 79:
+  build-depends:       , iris
+ 119:
+  autogen-modules:     Paths_iris
+ 120:
+  other-modules:       Paths_iris
+ 123:
+     , iris
+ 136:
+  autogen-modules:     Paths_iris
+ 137:
+  other-modules:       Paths_iris
+ 150:
+test-suite iris-test
+ 160:
+    Paths_iris
+ 164:
+    , iris
 ```
 
 So, let's begin!
@@ -50,10 +64,8 @@ import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
 
 import qualified Data.ByteString.Lazy as BSL
-import qualified Data.ByteString as BS
 import qualified Data.Text.Lazy as T
 import qualified Data.Text.Lazy.Encoding as TLE
-import qualified Data.Text as TS
 import qualified Options.Applicative as Opt
 
 import qualified Colourista
@@ -181,11 +193,11 @@ app = do
 
     occurencesPrinter $ substringText `occurencesIn` linedFile
         where
-        formattedPrinter :: T.Text -> BS.ByteString -> App ()
+        formattedPrinter :: T.Text -> T.Text -> App ()
         formattedPrinter txt colour =
             Iris.putStderrColouredLn
-            (Colourista.formatWith [colour, Colourista.bold])
-            $ "\n " `BS.append` (BSL.toStrict $ TLE.encodeUtf8 txt) `BS.append` " "
+            (Colourista.formatWith [T.toStrict $ colour, Colourista.bold])
+            $ T.toStrict ("\n " `T.append` (txt) `T.append` " ")
 ```
 
 Our main function and other not-important boilerplate functions for `grep`:
@@ -206,15 +218,14 @@ occurencesPrinter = mapM_ unpack
             printLine line
 
         printIdxWithColon :: Int -> App ()
-        printIdxWithColon idx = Iris.putStderrColoured
+        printIdxWithColon idx = Iris.putStderrColouredLn
           (Colourista.formatWith [Colourista.yellow, Colourista.bold])
-            $ TS.pack $ " " `mappend` show idx
+            $ (T.toStrict $ T.pack $ " " `mappend` show idx)
               `mappend`
-              ":"
+              (T.toStrict $ T.pack ":")
         printLine :: T.Text -> App ()
-        printLine x = Iris.putStdoutColoured
-            (Colourista.formatWith [TS.empty])
-            $ T.toStrict $ x `mappend` "\n"
+        printLine x = Iris.putStdoutColouredLn
+            (Colourista.formatWith [T.toStrict $ T.empty]) $ T.toStrict x
 ```
 
 So, we'd wish to execute all that stuff. Let's do it!
@@ -228,19 +239,33 @@ And output with occurences of "iris":
 ```
 Starting grepping 🔥 
 
-file name: iris.cabal 
-2:name:                iris
-7:    See [README.md](https://github.com/chshersh/iris#iris) for more details.
-8:homepage:            https://github.com/chshersh/iris
-9:bug-reports:         https://github.com/chshersh/iris/issues
-26:  location:            https://github.com/chshersh/iris.git
-79:  build-depends:       , iris
-119:  autogen-modules:     Paths_iris
-120:  other-modules:       Paths_iris
-123:     , iris
-136:  autogen-modules:     Paths_iris
-137:  other-modules:       Paths_iris
-150:test-suite iris-test
-160:    Paths_iris
-164:    , iris
+ file name: iris.cabal 
+ 2:
+name:                iris
+ 7:
+    See [README.md](https://github.com/chshersh/iris#iris) for more details.
+ 8:
+homepage:            https://github.com/chshersh/iris
+ 9:
+bug-reports:         https://github.com/chshersh/iris/issues
+ 26:
+  location:            https://github.com/chshersh/iris.git
+ 79:
+  build-depends:       , iris
+ 119:
+  autogen-modules:     Paths_iris
+ 120:
+  other-modules:       Paths_iris
+ 123:
+     , iris
+ 136:
+  autogen-modules:     Paths_iris
+ 137:
+  other-modules:       Paths_iris
+ 150:
+test-suite iris-test
+ 160:
+    Paths_iris
+ 164:
+    , iris
 ```
