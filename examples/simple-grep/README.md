@@ -10,7 +10,7 @@ cabal exec simple-grep -- -f DIR -s TARGET_WORD
 
 And will give the following result output:
 
-```
+```shell
 > cabal exec simple-grep -- -f path/iris.cabal -s iris
 
 Starting grepping 🔥 
