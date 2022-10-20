@@ -63,9 +63,8 @@ import Prelude hiding (readFile)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
 
-import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Text.Lazy as T
-import qualified Data.Text.Lazy.Encoding as TLE
+import qualified Data.Text.Lazy.IO as TIO
 import qualified Options.Applicative as Opt
 
 import qualified Colourista
@@ -151,7 +150,7 @@ Important to note, the `Iris.cliEnvSettingsRequiredTools` property is used by Ir
 
 Following next, for ensuring about our correctness on defined commands, we would check the `--help` flag's output:
 
-```
+```shell
 > cabal exec simple-grep -- --help
 
 Iris usage example
@@ -172,7 +171,7 @@ Available options:
 
 How can we see it, commands were parsed by Iris and showed up in the output! Of course, the `--help` command will work after passing the `appSettings` to the application runner.
 
-# Main monad's do-calculation
+## Main monad's do-calculation
 
 Finally, after setting up the configuration, we can describe our computation of CLI:
 
@@ -183,10 +182,10 @@ app = do
         { filePath, substring } <- Iris.asksCliEnv Iris.cliEnvCmd
 
     formattedPrinter "Starting grepping 🔥" Colourista.white
-    file <- liftIO $ BSL.readFile filePath
+    file <- liftIO $ TIO.readFile filePath
 
     let fileName = "file name: " `T.append` (last $ T.split (== '/') $ T.pack filePath)
-    let linedFile = T.lines $ TLE.decodeUtf8 file
+    let linedFile = T.lines file
     let substringText = T.pack substring
 
     formattedPrinter fileName Colourista.cyan
