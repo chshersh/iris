@@ -20,7 +20,6 @@ module Iris.Colour.Formatting
 
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
-import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.Text (Text)
 import System.IO (stderr)
