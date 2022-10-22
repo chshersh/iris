@@ -105,7 +105,7 @@ putStdoutColoured
     -> m ()
 putStdoutColoured formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStdoutColourMode
-    liftIO $ TIO.putStr $ case colourMode of
+    liftIO $ T.putStr $ case colourMode of
         DisableColour -> str
         EnableColour  -> formatWithColour str
 
@@ -132,6 +132,6 @@ putStderrColoured
     -> m ()
 putStderrColoured formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStderrColourMode
-    liftIO $ TIO.hPutStr stderr $ case colourMode of
+    liftIO $ T.hPutStr stderr $ case colourMode of
         DisableColour -> str
         EnableColour  -> formatWithColour str
