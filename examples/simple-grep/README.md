@@ -70,7 +70,7 @@ import qualified Options.Applicative as Opt
 import qualified Colourista
 ```
 
-So, we're writing a simple grep utility, we need here `Colourista` library for printing colored messages via the Iris app. Other libraries such as `Text`, `ByteString` is standard for our specific task. `optparse-applicative` is needed here for defining the set of commands that Iris will consume.
+So, we're writing a simple grep utility, we need here `Colourista` library for printing colored messages via the Iris app. Other libraries such as `Text` are standard for our specific task. `optparse-applicative` is needed here for defining the set of commands that Iris will consume.
 
 Also, will be great to highlight Iris import's preferences separately. The matter of convention is to keep Iris import qualified, library was designed in that kind of stuff, so we could get functions and types via `Iris.makeSome`:
 

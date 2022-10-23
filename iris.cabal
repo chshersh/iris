@@ -139,7 +139,6 @@ executable simple-grep
      , colourista ^>= 0.1
      , mtl
      , optparse-applicative
-     , bytestring
      , text
 
   ghc-options:         -threaded

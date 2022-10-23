@@ -7,6 +7,7 @@ and this project adheres to [PVP Versioning][1]. The changelog is also
 available [on GitHub][2].
 
 ## [Unreleased]
+
 - [#16](https://github.com/chshersh/iris/issues/16)
   Update documentation, Add new example written in Literate Haskell & tutorial-style
 - [#89](https://github.com/chshersh/iris/issues/89)
@@ -17,6 +18,8 @@ available [on GitHub][2].
 
 - [#90](https://github.com/chshersh/iris/issues/90):
   Use Data.Text instead of ByteString for coloured output
+- [#94](https://github.com/chshersh/iris/issues/94)
+  Change example to use Text
 
 ## [0.0.0.0] — 2022-08-09 🌇
 
