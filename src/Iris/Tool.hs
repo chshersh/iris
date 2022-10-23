@@ -20,13 +20,17 @@ module Iris.Tool
       -- * Tool requirements check
     , ToolCheckResult (..)
     , ToolCheckError (..)
+    , ToolCheckException (..)
     , checkTool
+    , need
     ) where
 
 import Data.String (IsString (..))
 import Data.Text (Text)
 import System.Directory (findExecutable)
 import System.Process (readProcess)
+import Control.Exception (Exception, throwIO)
+import Data.Foldable (for_)
 
 import qualified Data.Text as Text
 
@@ -35,20 +39,20 @@ import qualified Data.Text as Text
 
 @since 0.0.0.0
 -}
-data Tool cmd = Tool
+data Tool = Tool
     { -- | @since 0.0.0.0
       toolName     :: Text
 
       -- | @since 0.0.0.0
-    , toolSelector :: Maybe (ToolSelector cmd)
+    , toolSelector :: Maybe ToolSelector
     }
 
 {- |
 
 @since 0.0.0.0
 -}
-instance IsString (Tool cmd) where
-    fromString :: String -> Tool cmd
+instance IsString Tool where
+    fromString :: String -> Tool
     fromString s = Tool
         { toolName     = fromString s
         , toolSelector = Nothing
@@ -58,9 +62,9 @@ instance IsString (Tool cmd) where
 
 @since 0.0.0.0
 -}
-data ToolSelector cmd = ToolSelector
+data ToolSelector = ToolSelector
     { -- | @since 0.0.0.0
-      toolSelectorFunction   :: cmd -> Text -> Bool
+      toolSelectorFunction   :: Text -> Bool
 
       -- | @since 0.0.0.0
     , toolSelectorVersionArg :: Maybe Text
@@ -70,9 +74,9 @@ data ToolSelector cmd = ToolSelector
 
 @since 0.0.0.0
 -}
-defaultToolSelector :: ToolSelector cmd
+defaultToolSelector :: ToolSelector
 defaultToolSelector = ToolSelector
-    { toolSelectorFunction   = \_cmd _version -> True
+    { toolSelectorFunction   = const True
     , toolSelectorVersionArg = Nothing
     }
 
@@ -121,8 +125,8 @@ data ToolCheckError
 
 @since 0.0.0.0
 -}
-checkTool :: cmd -> Tool cmd -> IO ToolCheckResult
-checkTool cmd Tool{..} = findExecutable (Text.unpack toolName) >>= \case
+checkTool :: Tool-> IO ToolCheckResult
+checkTool Tool{..} = findExecutable (Text.unpack toolName) >>= \case
     Nothing  -> pure $ ToolCheckError $ ToolNotFound toolName
     Just exe -> case toolSelector of
         Nothing               -> pure ToolOk
@@ -132,6 +136,32 @@ checkTool cmd Tool{..} = findExecutable (Text.unpack toolName) >>= \case
                 toolVersionOutput <- readProcess exe [Text.unpack versionArg] ""
                 let version = Text.strip $ Text.pack toolVersionOutput
 
-                if toolSelectorFunction cmd version
+                if toolSelectorFunction version
                 then pure ToolOk
                 else pure $ ToolCheckError $ ToolWrongVersion version
+
+newtype ToolCheckException = ToolCheckException ToolCheckError
+    deriving stock
+        ( Show  -- ^ @since 0.0.0.0
+        )
+
+    deriving newtype
+        ( Eq  -- ^ @since 0.0.0.0
+        )
+
+    deriving anyclass
+        ( Exception  -- ^ @since 0.0.0.0
+        )
+
+
+{-|
+
+__Throws:__ 'ToolCheckException' if can't find a tool or if it has wrong version.
+@since 0.0.0.0
+-}
+need :: [Tool] -> IO ()
+need tools =
+    for_ tools $ \tool ->
+        checkTool tool >>= \case
+            ToolOk  -> pure ()
+            (ToolCheckError toolErr) -> throwIO $ ToolCheckException toolErr

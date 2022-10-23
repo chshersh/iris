@@ -21,7 +21,6 @@ module Iris.Settings
 import Data.Kind (Type)
 import qualified Options.Applicative as Opt
 import Iris.Cli.Version (VersionSettings)
-import Iris.Tool (Tool)
 
 {- |
 
@@ -42,10 +41,6 @@ data CliEnvSettings (cmd :: Type) (appEnv :: Type) = CliEnvSettings
 
       -- | @since 0.0.0.0
     , cliEnvSettingsVersionSettings :: Maybe VersionSettings
-
-    , cliEnvSettingsAppName :: Maybe String
-      -- | @since 0.0.0.0
-    , cliEnvSettingsRequiredTools   :: [Tool cmd]
     }
 
 
@@ -60,6 +55,4 @@ defaultCliEnvSettings = CliEnvSettings
     , cliEnvSettingsHeaderDesc      = "Simple CLI program"
     , cliEnvSettingsProgDesc        = "CLI tool build with iris - a Haskell CLI framework"
     , cliEnvSettingsVersionSettings = Nothing
-    , cliEnvSettingsAppName         = Nothing
-    , cliEnvSettingsRequiredTools   = []
     }

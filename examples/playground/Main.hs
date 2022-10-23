@@ -26,7 +26,6 @@ appSettings = Iris.defaultCliEnvSettings
         Just (Iris.defaultVersionSettings Autogen.version)
             { Iris.versionSettingsMkDesc = \v -> "Iris Example v" <> v
             }
-    , Iris.cliEnvSettingsRequiredTools = ["curl", "ghc"]
     }
 
 app :: App ()

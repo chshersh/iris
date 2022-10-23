@@ -127,15 +127,12 @@ appSettings = Iris.defaultCliEnvSettings
         Just (Iris.defaultVersionSettings Autogen.version)
             { Iris.versionSettingsMkDesc = \v -> "Simple grep utility v" <> v
             }
-    , Iris.cliEnvSettingsRequiredTools = []
 
     , Iris.cliEnvSettingsCmdParser = commandsSettings
     }
 ```
 
 We describe settings for the app based on `defaultCliEnvSettings`. It helps when we don't need some option to describe, so we can just skip it. Here we can write a CLI-program description, put required tools with a list and then pass commands with the `Parser a` type from `optparse-applicative` to the `cliEnvSettingsCmdParser` field.
-
-Important to note, the `Iris.cliEnvSettingsRequiredTools` property is used by Iris for checking that system has those tools in the list, if not, it throws a `CliEnvException` exception.
 
 Following next, for ensuring about our correctness on defined commands, we would check the `--help` flag's output:
 
