@@ -20,24 +20,28 @@ jobs:
         ghc:
           - "8.10.7"
           - "9.0.2"
-          - "9.2.4"
-          - "9.4.2"
+          - "9.2.5"
+          - "9.4.4"
 
         exclude:
           - os: macOS-latest
             ghc: 8.10.7
           - os: macOS-latest
             ghc: 9.0.2
+          - os: macOS-latest
+            ghc: 9.2.5
 
           - os: windows-latest
             ghc: 8.10.7
           - os: windows-latest
             ghc: 9.0.2
+          - os: windows-latest
+            ghc: 9.2.5
 
     steps:
     - uses: actions/checkout@v3
 
-    - uses: haskell/actions/setup@v2.0
+    - uses: haskell/actions/setup@v2.2
       id: setup-haskell-cabal
       name: Setup Haskell
       with:
@@ -79,13 +83,13 @@ jobs:
       runs-on: ubuntu-latest
       strategy:
         matrix:
-          stack: ["2.7.5"]
-          ghc: ["9.2.4"]
+          stack: ["2.9.3"]
+          ghc: ["9.2.5"]
 
       steps:
       - uses: actions/checkout@v3
 
-      - uses: haskell/actions/setup@v2.0
+      - uses: haskell/actions/setup@v2.2
         name: Setup Haskell Stack
         with:
           ghc-version: ${{ matrix.ghc }}
@@ -114,9 +118,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    # See: https://github.com/haskell/actions/issues/128
+    - name: Fix Ubuntu Runner
+      run: |
+        sudo apt-get install -y libncurses5
+
     - name: Run HLint
       env:
-         HLINT_VERSION: "3.2.7"
+         HLINT_VERSION: "3.5"
       run: |
         curl -L https://github.com/ndmitchell/hlint/releases/download/v${HLINT_VERSION}/hlint-${HLINT_VERSION}-x86_64-linux.tar.gz --output hlint.tar.gz
         tar -xvf hlint.tar.gz
@@ -135,7 +144,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - uses: haskell/actions/setup@v2.0
+    - uses: haskell/actions/setup@v2.2
       id: setup-haskell-cabal
       name: Setup Haskell
       with:
