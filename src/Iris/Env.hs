@@ -1,5 +1,5 @@
+{-# LANGUAGE ApplicativeDo    #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE ApplicativeDo #-}
 
 {- |
 Module                  : Iris.Env
@@ -34,12 +34,12 @@ import Data.Foldable (for_)
 import Data.Kind (Type)
 import System.IO (stderr, stdout)
 
+import Iris.Cli.Interactive (InteractiveMode, handleInteractiveMode)
 import Iris.Cli.Internal (Cmd (..))
 import Iris.Cli.ParserInfo (cmdParserInfo)
-import Iris.Cli.Interactive (InteractiveMode, handleInteractiveMode)
-import Iris.Colour.Mode (ColourMode, handleColourMode)
+import Iris.Colour.Mode (ColourMode, actualHandleColourMode)
 import Iris.Settings (CliEnvSettings (..))
-import Iris.Tool (ToolCheckResult (..), checkTool, ToolCheckError (..))
+import Iris.Tool (ToolCheckError (..), ToolCheckResult (..), checkTool)
 
 import qualified Options.Applicative as Opt
 
@@ -116,13 +116,13 @@ mkCliEnv
     -> IO (CliEnv cmd appEnv)
 mkCliEnv cliEnvSettings@CliEnvSettings{..} = do
     Cmd{..} <- Opt.execParser $ cmdParserInfo cliEnvSettings
-    stdoutColourMode <- handleColourMode stdout
-    stderrColourMode <- handleColourMode stderr
+    stdoutColourMode <- actualHandleColourMode cliEnvSettingsAppName cmdColourOption stdout
+    stderrColourMode <- actualHandleColourMode cliEnvSettingsAppName cmdColourOption stderr
     interactive <- handleInteractiveMode cmdInteractiveMode
 
     for_ cliEnvSettingsRequiredTools $ \tool ->
         checkTool cmdCmd tool >>= \case
-            ToolOk  -> pure ()
+            ToolOk                   -> pure ()
             (ToolCheckError toolErr) -> throwIO $ CliEnvException $ CliEnvToolError toolErr
 
     pure CliEnv

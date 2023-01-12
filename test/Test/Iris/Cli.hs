@@ -3,15 +3,21 @@ module Test.Iris.Cli (cliSpec, cliSpecParserConflicts) where
 
 import Test.Hspec (Expectation, Spec, describe, expectationFailure, it, shouldBe, shouldReturn)
 
+import Iris (CliEnvSettings (..))
 import Iris.Cli (VersionSettings (versionSettingsMkDesc))
 import Iris.Cli.Interactive (InteractiveMode (..), handleInteractiveMode)
 import Iris.Cli.Internal
 import Iris.Cli.ParserInfo (cmdParserInfo)
+import Iris.Cli.TripleOption (TripleOption (..))
 import Iris.Cli.Version (defaultVersionSettings)
-import Iris.Settings (CliEnvSettings (..), defaultCliEnvSettings)
+import Iris.Colour.Detect (detectColourDisabled)
+import Iris.Colour.Mode (ColourMode (..), actualHandleColourMode)
+import Iris.Settings (defaultCliEnvSettings)
+import Options.Applicative (getParseResult)
 import qualified Options.Applicative as Opt
 import qualified Paths_iris as Autogen
-import System.Environment (lookupEnv)
+import System.Environment (lookupEnv, setEnv)
+import System.IO (stdout)
 
 
 checkCI :: IO Bool
@@ -21,19 +27,22 @@ expectedHelpText :: String
 expectedHelpText =
     "Simple CLI program\n\
     \\n\
-    \Usage: <iris-test> [--no-input]\n\
+    \Usage: <iris-test> [--no-input] [--colour | --no-colour]\n\
     \\n\
     \  CLI tool build with iris - a Haskell CLI framework\n\
     \\n\
     \Available options:\n\
     \  -h,--help                Show this help text\n\
-    \  --no-input               Enter the terminal in non-interactive mode"
+    \  --no-input               Enter the terminal in non-interactive mode\n\
+    \  --colour                 Enable colours\n\
+    \  --no-colour              Disable colours"
 
 expectedHelpTextWithVersion :: String
 expectedHelpTextWithVersion =
     "Simple CLI program\n\
     \\n\
-    \Usage: <iris-test> [--version] [--numeric-version] [--no-input]\n\
+    \Usage: <iris-test> [--version] [--numeric-version] [--no-input] \n\
+    \                   [--colour | --no-colour]\n\
     \\n\
     \  CLI tool build with iris - a Haskell CLI framework\n\
     \\n\
@@ -41,10 +50,15 @@ expectedHelpTextWithVersion =
     \  -h,--help                Show this help text\n\
     \  --version                Show application version\n\
     \  --numeric-version        Show only numeric application version\n\
-    \  --no-input               Enter the terminal in non-interactive mode"
+    \  --no-input               Enter the terminal in non-interactive mode\n\
+    \  --colour                 Enable colours\n\
+    \  --no-colour              Disable colours"
 
 expectedNumericVersion :: String
 expectedNumericVersion = "0.0.0.0"
+
+clearAppEnv :: IO()
+clearAppEnv = mconcat $ setEnv <$> ["NO_COLOR","NO_COLOUR","MYAPP_NO_COLOR","MYAPP_NO_COLOUR","TERM"] <*> [""]
 
 cliSpec :: Spec
 cliSpec = describe "Cli Options" $ do
@@ -68,6 +82,54 @@ cliSpec = describe "Cli Options" $ do
         isCi <- checkCI
         if isCi then handleInteractiveMode Interactive `shouldReturn` NonInteractive
         else handleInteractiveMode Interactive `shouldReturn` Interactive
+    it "Handles colour mode" $ do
+        let parserInfo = cmdParserInfo defaultCliEnvSettings
+        let coloption args = getParseResult $ cmdColourOption <$> Opt.execParserPure parserPrefs parserInfo args
+        coloption ["--colour"] `shouldBe` pure TOAlways
+        coloption ["--no-colour"] `shouldBe` pure TONever
+        coloption [] `shouldBe` pure TOAuto
+    it "Applies base nocolour environment" $ do
+        clearAppEnv
+        detectColourDisabled (Just "MYAPP") `shouldReturn` False
+        setEnv "NO_COLOR" "TRUE"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` True
+        clearAppEnv
+        setEnv "NO_COLOUR" "TRUE"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` True
+    it "Applies app specific nocolour environment" $ do
+        clearAppEnv
+        detectColourDisabled (Just "MYAPP") `shouldReturn` False
+        setEnv "MYAPP_NO_COLOR" "TRUE"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` False
+        clearAppEnv
+        setEnv "MYAPP_NO_COLOUR" "TRUE"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` False
+    it "Disables colour on dumb terminals" $ do
+        clearAppEnv
+        setEnv "TERM" "NOTDUMB"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` False
+        detectColourDisabled Nothing `shouldReturn` False
+        setEnv "TERM" "dumb"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` True
+        setEnv "NO_COLOR" "TRUE"
+        setEnv "MYAPP_NO_COLOR" "TRUE"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` True
+    it "CI colour check" $ do
+        isCi <- checkCI
+        clearAppEnv
+        let ciColour = if isCi then DisableColour else EnableColour
+        actualHandleColourMode (Just "MYAPP") TONever stdout `shouldReturn` DisableColour
+        actualHandleColourMode (Just "MYAPP") TOAlways stdout `shouldReturn` ciColour
+        actualHandleColourMode (Just "MYAPP") TOAuto stdout `shouldReturn` ciColour
+        setEnv "NO_COLOUR" "TRUE"
+        actualHandleColourMode (Just "MYAPP") TOAuto stdout `shouldReturn` DisableColour
+        actualHandleColourMode (Just "MYAPP") TOAlways stdout `shouldReturn` ciColour
     it "--version returns correct version text" $ do
         let expectedVersionMkDescription = ("Version " ++)
         let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just $ (defaultVersionSettings Autogen.version) {versionSettingsMkDesc  = expectedVersionMkDescription}}
@@ -100,6 +162,7 @@ customParserSettings parser = CliEnvSettings
     , cliEnvSettingsProgDesc        = "CLI tool build with iris - a Haskell CLI framework"
     , cliEnvSettingsVersionSettings = Nothing
     , cliEnvSettingsRequiredTools   = []
+    , cliEnvSettingsAppName         = Nothing
     }
 
 argValue :: String
@@ -109,7 +172,7 @@ expectedErrorTextUserDefinedNoInputArg :: String
 expectedErrorTextUserDefinedNoInputArg =
   "Invalid argument `" <> argValue <> "'\n\
   \\n\
-  \Usage: <iris-test> [--no-input] --no-input ARG\n\
+  \Usage: <iris-test> [--no-input] --no-input ARG [--colour | --no-colour]\n\
   \\n\
   \  CLI tool build with iris - a Haskell CLI framework"
 
@@ -117,7 +180,7 @@ expectedErrorTextUserDefinedNoInputNoArg :: String
 expectedErrorTextUserDefinedNoInputNoArg =
   "Missing: --no-input ARG\n\
   \\n\
-  \Usage: <iris-test> [--no-input] --no-input ARG\n\
+  \Usage: <iris-test> [--no-input] --no-input ARG [--colour | --no-colour]\n\
   \\n\
   \  CLI tool build with iris - a Haskell CLI framework"
 

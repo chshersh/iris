@@ -18,6 +18,7 @@ module Iris.Cli.Internal
 
 import Data.Kind (Type)
 import Iris.Cli.Interactive (InteractiveMode)
+import Iris.Cli.TripleOption
 
 {- |
 
@@ -26,5 +27,6 @@ Wrapper around @cmd@ with additional predefined fields
 
 data Cmd (cmd :: Type) = Cmd
     { cmdInteractiveMode :: InteractiveMode
-    , cmdCmd :: cmd
+    , cmdColourOption    :: TripleOption
+    , cmdCmd             :: cmd
     }

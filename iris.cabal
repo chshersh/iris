@@ -95,13 +95,15 @@ library
         Iris.Cli.Interactive
         Iris.Cli.ParserInfo
         Iris.Cli.Version
+        Iris.Cli.TripleOption
       Iris.Colour
+        Iris.Cli.Colour
+          Iris.Colour.Detect
         Iris.Colour.Formatting
         Iris.Colour.Mode
       Iris.Env
       Iris.Settings
       Iris.Tool
-
   build-depends:
     , ansi-terminal        ^>= 0.11
     , directory            ^>= 1.3
