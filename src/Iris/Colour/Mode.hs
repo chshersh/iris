@@ -19,7 +19,6 @@ module Iris.Colour.Mode
     , actualHandleColourMode
     ) where
 
-import Iris.Cli.Colour
 import Iris.Cli.TripleOption
 import Iris.Colour.Detect (detectColourDisabled)
 import System.Console.ANSI (hSupportsANSIColor)
