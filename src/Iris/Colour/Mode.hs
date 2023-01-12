@@ -20,7 +20,7 @@ module Iris.Colour.Mode
     ) where
 
 import Iris.Cli.Colour
-import Iris.Colour.Detect (detectColour)
+import Iris.Colour.Detect (detectColourDisabled)
 import System.Console.ANSI (hSupportsANSIColor)
 import System.IO (Handle)
 
@@ -79,7 +79,7 @@ to terminal:
 actualHandleColourMode :: Maybe String -> ColourOption -> Handle ->  IO ColourMode
 actualHandleColourMode app colourOption handle = do
     handleMode <- handleColourMode handle
-    colourDisabled <- detectColour app
+    colourDisabled <- detectColourDisabled app
     pure $ case (handleMode,colourOption,colourDisabled) of
         (DisableColour,_,_) -> DisableColour
         (_,AlwaysColour,_)  -> EnableColour

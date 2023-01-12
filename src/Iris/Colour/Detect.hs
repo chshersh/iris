@@ -12,16 +12,21 @@ Detects if colour should be enabled or not
 -}
 
 module Iris.Colour.Detect
-    ( detectColour
+    ( detectColourDisabled
     ) where
+import Data.Char (toLower)
 import System.Environment (lookupEnv)
 
 
-
-detectColour :: Maybe String -> IO Bool
-detectColour appname = any  (/= Nothing) <$> traverse lookupEnv varnames
+detectColourDisabled :: Maybe String -> IO Bool
+detectColourDisabled maybeAppName = do
+      nocolour <-  any  (/= Nothing) <$> traverse lookupEnv varnames
+      term <- lookupEnv "TERM"
+      let dumb = (map toLower <$> term) == Just "dumb"
+      return $ dumb || nocolour
   where
     basevarnames = ["NO_COLOR","NO_COLOUR"]
-    varnames = case (<> "_") <$> appname of
-        Nothing -> basevarnames
-        Just n  -> ((n <>) <$> basevarnames) <> basevarnames
+    prepend appName envName = appName <> "_" <> envName
+    varnames = case maybeAppName of
+        Nothing      -> basevarnames
+        Just appName -> basevarnames <> (prepend appName <$> basevarnames)

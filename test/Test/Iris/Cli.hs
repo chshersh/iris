@@ -10,7 +10,7 @@ import Iris.Cli.Interactive (InteractiveMode (..), handleInteractiveMode)
 import Iris.Cli.Internal
 import Iris.Cli.ParserInfo (cmdParserInfo)
 import Iris.Cli.Version (defaultVersionSettings)
-import Iris.Colour.Detect (detectColour)
+import Iris.Colour.Detect (detectColourDisabled)
 import Iris.Colour.Mode (ColourMode (..), actualHandleColourMode)
 import Iris.Settings (defaultCliEnvSettings)
 import Options.Applicative (getParseResult)
@@ -58,7 +58,7 @@ expectedNumericVersion :: String
 expectedNumericVersion = "0.0.0.0"
 
 clearAppEnv :: IO()
-clearAppEnv = mconcat $ setEnv <$> ["NO_COLOR","NO_COLOUR","MYAPP_NO_COLOR","MYAPP_NO_COLOUR"] <*> [""]
+clearAppEnv = mconcat $ setEnv <$> ["NO_COLOR","NO_COLOUR","MYAPP_NO_COLOR","MYAPP_NO_COLOUR","TERM"] <*> [""]
 
 cliSpec :: Spec
 cliSpec = describe "Cli Options" $ do
@@ -90,24 +90,36 @@ cliSpec = describe "Cli Options" $ do
         coloption [] `shouldBe` pure AutoColour
     it "Applies base nocolour environment" $ do
         clearAppEnv
-        detectColour (Just "MYAPP") `shouldReturn` False
+        detectColourDisabled (Just "MYAPP") `shouldReturn` False
         setEnv "NO_COLOR" "TRUE"
-        detectColour (Just "MYAPP") `shouldReturn` True
-        detectColour Nothing `shouldReturn` True
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` True
         clearAppEnv
         setEnv "NO_COLOUR" "TRUE"
-        detectColour (Just "MYAPP") `shouldReturn` True
-        detectColour Nothing `shouldReturn` True
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` True
     it "Applies app specific nocolour environment" $ do
         clearAppEnv
-        detectColour (Just "MYAPP") `shouldReturn` False
+        detectColourDisabled (Just "MYAPP") `shouldReturn` False
         setEnv "MYAPP_NO_COLOR" "TRUE"
-        detectColour (Just "MYAPP") `shouldReturn` True
-        detectColour Nothing `shouldReturn` False
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` False
         clearAppEnv
         setEnv "MYAPP_NO_COLOUR" "TRUE"
-        detectColour (Just "MYAPP") `shouldReturn` True
-        detectColour Nothing `shouldReturn` False
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` False
+    it "Disables colour on dumb terminals" $do
+        clearAppEnv
+        setEnv "TERM" "NOTDUMB"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` False
+        detectColourDisabled Nothing `shouldReturn` False
+        setEnv "TERM" "dumb"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` True
+        setEnv "NO_COLOR" "TRUE"
+        setEnv "MYAPP_NO_COLOR" "TRUE"
+        detectColourDisabled (Just "MYAPP") `shouldReturn` True
+        detectColourDisabled Nothing `shouldReturn` True
     it "CI colour check" $ do
         isCi <- checkCI
         clearAppEnv
