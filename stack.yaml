@@ -1,4 +1,4 @@
-resolver: nightly-2022-08-04
+resolver: lts-20.5
 
 extra-deps:
   - colourista-0.1.0.2
