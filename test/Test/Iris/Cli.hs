@@ -5,10 +5,10 @@ import Test.Hspec (Expectation, Spec, describe, expectationFailure, it, shouldBe
 
 import Iris (CliEnvSettings (..))
 import Iris.Cli (VersionSettings (versionSettingsMkDesc))
-import Iris.Cli.Colour (ColourOption (..))
 import Iris.Cli.Interactive (InteractiveMode (..), handleInteractiveMode)
 import Iris.Cli.Internal
 import Iris.Cli.ParserInfo (cmdParserInfo)
+import Iris.Cli.TripleOption (TripleOption (..))
 import Iris.Cli.Version (defaultVersionSettings)
 import Iris.Colour.Detect (detectColourDisabled)
 import Iris.Colour.Mode (ColourMode (..), actualHandleColourMode)
@@ -85,9 +85,9 @@ cliSpec = describe "Cli Options" $ do
     it "Handles colour mode" $ do
         let parserInfo = cmdParserInfo defaultCliEnvSettings
         let coloption args = getParseResult $ cmdColourOption <$> Opt.execParserPure parserPrefs parserInfo args
-        coloption ["--colour"] `shouldBe` pure AlwaysColour
-        coloption ["--no-colour"] `shouldBe` pure NeverColour
-        coloption [] `shouldBe` pure AutoColour
+        coloption ["--colour"] `shouldBe` pure TOAlways
+        coloption ["--no-colour"] `shouldBe` pure TONever
+        coloption [] `shouldBe` pure TOAuto
     it "Applies base nocolour environment" $ do
         clearAppEnv
         detectColourDisabled (Just "MYAPP") `shouldReturn` False
@@ -124,12 +124,12 @@ cliSpec = describe "Cli Options" $ do
         isCi <- checkCI
         clearAppEnv
         let ciColour = if isCi then DisableColour else EnableColour
-        actualHandleColourMode (Just "MYAPP") NeverColour stdout `shouldReturn` DisableColour
-        actualHandleColourMode (Just "MYAPP") AlwaysColour stdout `shouldReturn` ciColour
-        actualHandleColourMode (Just "MYAPP") AutoColour stdout `shouldReturn` ciColour
+        actualHandleColourMode (Just "MYAPP") TONever stdout `shouldReturn` DisableColour
+        actualHandleColourMode (Just "MYAPP") TOAlways stdout `shouldReturn` ciColour
+        actualHandleColourMode (Just "MYAPP") TOAuto stdout `shouldReturn` ciColour
         setEnv "NO_COLOUR" "TRUE"
-        actualHandleColourMode (Just "MYAPP") AutoColour stdout `shouldReturn` DisableColour
-        actualHandleColourMode (Just "MYAPP") AlwaysColour stdout `shouldReturn` ciColour
+        actualHandleColourMode (Just "MYAPP") TOAuto stdout `shouldReturn` DisableColour
+        actualHandleColourMode (Just "MYAPP") TOAlways stdout `shouldReturn` ciColour
     it "--version returns correct version text" $ do
         let expectedVersionMkDescription = ("Version " ++)
         let cliEnvSettings = defaultCliEnvSettings { cliEnvSettingsVersionSettings = Just $ (defaultVersionSettings Autogen.version) {versionSettingsMkDesc  = expectedVersionMkDescription}}
