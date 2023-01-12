@@ -108,7 +108,7 @@ cliSpec = describe "Cli Options" $ do
         setEnv "MYAPP_NO_COLOUR" "TRUE"
         detectColourDisabled (Just "MYAPP") `shouldReturn` True
         detectColourDisabled Nothing `shouldReturn` False
-    it "Disables colour on dumb terminals" $do
+    it "Disables colour on dumb terminals" $ do
         clearAppEnv
         setEnv "TERM" "NOTDUMB"
         detectColourDisabled (Just "MYAPP") `shouldReturn` False
