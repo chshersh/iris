@@ -1,7 +1,6 @@
 {- |
 Module                  : Iris.Colour.Detect
-Copyright               : (c) 2020 Kowainik
-                          (c) 2022 Dmitrii Kovanikov
+Copyright               : (c) 2022 Dmitrii Kovanikov
 SPDX-License-Identifier : MPL-2.0
 Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
 Stability               : Experimental

@@ -35,6 +35,8 @@ data ColourOption
 
     -- | @since x.x.x.x
     | NeverColour
+
+    -- | @since x.x.x.x
     | AutoColour
     deriving stock
         ( Show     -- ^ @since x.x.x.x

@@ -66,8 +66,8 @@ CLI apps built with Iris offer the following features for end users:
     * `--version`
     * `--numeric-version`: helpful for detecting required tools versions
     * `--no-input`: for disabling all interactive features
-    * `--colour`: to set colour mode
-    * `--no-colour`: to set non colour mode
+    * `--colour=(auto|never|always)`: to set colour mode
+    * `--no-colour`: to disable terminal colouring
 * Utilities to open files in a browser
 
 ## How to use?
