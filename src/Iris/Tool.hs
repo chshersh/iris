@@ -31,6 +31,7 @@ import System.Directory (findExecutable)
 import System.Process (readProcess)
 import Control.Exception (Exception, throwIO)
 import Data.Foldable (for_)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 
 import qualified Data.Text as Text
 
@@ -159,9 +160,9 @@ newtype ToolCheckException = ToolCheckException ToolCheckError
 __Throws:__ 'ToolCheckException' if can't find a tool or if it has wrong version.
 @since 0.0.0.0
 -}
-need :: [Tool] -> IO ()
+need :: MonadIO m => [Tool] -> m ()
 need tools =
     for_ tools $ \tool ->
-        checkTool tool >>= \case
+        liftIO $ checkTool tool >>= \case
             ToolOk  -> pure ()
             (ToolCheckError toolErr) -> throwIO $ ToolCheckException toolErr

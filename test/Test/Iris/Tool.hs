@@ -36,7 +36,7 @@ toolSpec = describe "Tool" $ do
 
         checkTool ghc100 >>= (`shouldSatisfy` isToolWrongVersion)
 
-    it "should not fail when 'need'ing 'curl'" $ need ["curl"]
+    it "should not fail when 'need'ing 'curl'" $ (need ["curl"] :: IO ())
 
     it "should fail when 'need'ing not found tools" $ do
         let tool = "xxx_unknown_executable"
