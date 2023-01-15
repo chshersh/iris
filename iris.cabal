@@ -107,7 +107,6 @@ library
   build-depends:
     , ansi-terminal        ^>= 0.11
     , directory            ^>= 1.3
-    , bytestring            >= 0.10 && < 0.12
     , mtl                   >= 2.2  && < 2.4
     , optparse-applicative ^>= 0.17
     , process              ^>= 1.6
@@ -143,7 +142,6 @@ executable simple-grep
      , colourista ^>= 0.1
      , mtl
      , optparse-applicative
-     , bytestring
      , text
 
   ghc-options:         -threaded
