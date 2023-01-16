@@ -161,7 +161,6 @@ customParserSettings parser = CliEnvSettings
     , cliEnvSettingsHeaderDesc      = "Simple CLI program"
     , cliEnvSettingsProgDesc        = "CLI tool build with iris - a Haskell CLI framework"
     , cliEnvSettingsVersionSettings = Nothing
-    , cliEnvSettingsRequiredTools   = []
     , cliEnvSettingsAppName         = Nothing
     }
 
