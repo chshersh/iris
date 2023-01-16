@@ -22,18 +22,16 @@ module Iris.Colour.Formatting
 
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
-import Data.ByteString (ByteString)
+import qualified Data.Text.IO as T
 import Data.Text (Text)
 import System.IO (stderr)
 
 import Iris.Colour.Mode (ColourMode (..))
 import Iris.Env (CliEnv (..), asksCliEnv)
 
-import qualified Data.ByteString.Char8 as BS8
 import qualified Data.Text.IO as TIO
 
-
-{- | Print 'ByteString' to 'System.IO.stdout' by providing a custom
+{- | Print 'Text' to 'System.IO.stdout' by providing a custom
 formatting function.
 
 This works especially well with the @colourista@ package:
@@ -50,16 +48,16 @@ putStdoutColouredLn
     :: ( MonadReader (CliEnv cmd appEnv) m
        , MonadIO m
        )
-    => (ByteString -> ByteString)
-    -> ByteString
+    => (Text -> Text)
+    -> Text
     -> m ()
 putStdoutColouredLn formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStdoutColourMode
-    liftIO $ BS8.putStrLn $ case colourMode of
+    liftIO $ T.putStrLn $ case colourMode of
         DisableColour -> str
         EnableColour  -> formatWithColour str
 
-{- | Print 'ByteString' to 'System.IO.stderr' by providing a custom
+{- | Print 'Text' to 'System.IO.stderr' by providing a custom
 formatting function.
 
 This works especially well with the @colourista@ package:
@@ -76,12 +74,12 @@ putStderrColouredLn
     :: ( MonadReader (CliEnv cmd appEnv) m
        , MonadIO m
        )
-    => (ByteString -> ByteString)
-    -> ByteString
+    => (Text -> Text)
+    -> Text
     -> m ()
 putStderrColouredLn formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStderrColourMode
-    liftIO $ BS8.hPutStrLn stderr $ case colourMode of
+    liftIO $ T.hPutStrLn stderr $ case colourMode of
         DisableColour -> str
         EnableColour  -> formatWithColour str
 

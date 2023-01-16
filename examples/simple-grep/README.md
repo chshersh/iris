@@ -10,26 +10,40 @@ cabal exec simple-grep -- -f DIR -s TARGET_WORD
 
 And will give the following result output:
 
-```
+```shell
 > cabal exec simple-grep -- -f path/iris.cabal -s iris
 
 Starting grepping 🔥 
 
-file name: iris.cabal 
-2:name:                iris
-7:    See [README.md](https://github.com/chshersh/iris#iris) for more details.
-8:homepage:            https://github.com/chshersh/iris
-9:bug-reports:         https://github.com/chshersh/iris/issues
-26:  location:            https://github.com/chshersh/iris.git
-79:  build-depends:       , iris
-119:  autogen-modules:     Paths_iris
-120:  other-modules:       Paths_iris
-123:     , iris
-136:  autogen-modules:     Paths_iris
-137:  other-modules:       Paths_iris
-150:test-suite iris-test
-160:    Paths_iris
-164:    , iris
+ file name: iris.cabal 
+ 2:
+name:                iris
+ 7:
+    See [README.md](https://github.com/chshersh/iris#iris) for more details.
+ 8:
+homepage:            https://github.com/chshersh/iris
+ 9:
+bug-reports:         https://github.com/chshersh/iris/issues
+ 26:
+  location:            https://github.com/chshersh/iris.git
+ 79:
+  build-depends:       , iris
+ 119:
+  autogen-modules:     Paths_iris
+ 120:
+  other-modules:       Paths_iris
+ 123:
+     , iris
+ 136:
+  autogen-modules:     Paths_iris
+ 137:
+  other-modules:       Paths_iris
+ 150:
+test-suite iris-test
+ 160:
+    Paths_iris
+ 164:
+    , iris
 ```
 
 So, let's begin!
@@ -49,17 +63,14 @@ import Prelude hiding (readFile)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
 
-import qualified Data.ByteString.Lazy as BSL
-import qualified Data.ByteString as BS
 import qualified Data.Text.Lazy as T
-import qualified Data.Text.Lazy.Encoding as TLE
-import qualified Data.Text as TS
+import qualified Data.Text.Lazy.IO as TIO
 import qualified Options.Applicative as Opt
 
 import qualified Colourista
 ```
 
-So, we're writing a simple grep utility, we need here `Colourista` library for printing colored messages via the Iris app. Other libraries such as `Text`, `ByteString` is standard for our specific task. `optparse-applicative` is needed here for defining the set of commands that Iris will consume.
+So, we're writing a simple grep utility, we need here `Colourista` library for printing colored messages via the Iris app. Other libraries such as `Text` are standard for our specific task. `optparse-applicative` is needed here for defining the set of commands that Iris will consume.
 
 Also, will be great to highlight Iris import's preferences separately. The matter of convention is to keep Iris import qualified, library was designed in that kind of stuff, so we could get functions and types via `Iris.makeSome`:
 
@@ -136,7 +147,7 @@ We describe settings for the app based on `defaultCliEnvSettings`. It helps when
 
 Following next, for ensuring about our correctness on defined commands, we would check the `--help` flag's output:
 
-```
+```shell
 > cabal exec simple-grep -- --help
 
 Iris usage example
@@ -157,7 +168,7 @@ Available options:
 
 How can we see it, commands were parsed by Iris and showed up in the output! Of course, the `--help` command will work after passing the `appSettings` to the application runner.
 
-# Main monad's do-calculation
+## Main monad's do-calculation
 
 Finally, after setting up the configuration, we can describe our computation of CLI:
 
@@ -168,21 +179,21 @@ app = do
         { filePath, substring } <- Iris.asksCliEnv Iris.cliEnvCmd
 
     formattedPrinter "Starting grepping 🔥" Colourista.white
-    file <- liftIO $ BSL.readFile filePath
+    file <- liftIO $ TIO.readFile filePath
 
     let fileName = "file name: " `T.append` (last $ T.split (== '/') $ T.pack filePath)
-    let linedFile = T.lines $ TLE.decodeUtf8 file
+    let linedFile = T.lines file
     let substringText = T.pack substring
 
     formattedPrinter fileName Colourista.cyan
 
     occurencesPrinter $ substringText `occurencesIn` linedFile
         where
-        formattedPrinter :: T.Text -> BS.ByteString -> App ()
+        formattedPrinter :: T.Text -> T.Text -> App ()
         formattedPrinter txt colour =
             Iris.putStderrColouredLn
-            (Colourista.formatWith [colour, Colourista.bold])
-            $ "\n " `BS.append` (BSL.toStrict $ TLE.encodeUtf8 txt) `BS.append` " "
+            (Colourista.formatWith [T.toStrict $ colour, Colourista.bold])
+            $ T.toStrict ("\n " `T.append` (txt) `T.append` " ")
 ```
 
 Our main function and other not-important boilerplate functions for `grep`:
@@ -203,15 +214,14 @@ occurencesPrinter = mapM_ unpack
             printLine line
 
         printIdxWithColon :: Int -> App ()
-        printIdxWithColon idx = Iris.putStderrColoured
+        printIdxWithColon idx = Iris.putStderrColouredLn
           (Colourista.formatWith [Colourista.yellow, Colourista.bold])
-            $ TS.pack $ " " `mappend` show idx
+            $ (T.toStrict $ T.pack $ " " `mappend` show idx)
               `mappend`
-              ":"
+              (T.toStrict $ T.pack ":")
         printLine :: T.Text -> App ()
-        printLine x = Iris.putStdoutColoured
-            (Colourista.formatWith [TS.empty])
-            $ T.toStrict $ x `mappend` "\n"
+        printLine x = Iris.putStdoutColouredLn
+            (Colourista.formatWith [T.toStrict $ T.empty]) $ T.toStrict x
 ```
 
 So, we'd wish to execute all that stuff. Let's do it!
@@ -225,19 +235,33 @@ And output with occurences of "iris":
 ```
 Starting grepping 🔥 
 
-file name: iris.cabal 
-2:name:                iris
-7:    See [README.md](https://github.com/chshersh/iris#iris) for more details.
-8:homepage:            https://github.com/chshersh/iris
-9:bug-reports:         https://github.com/chshersh/iris/issues
-26:  location:            https://github.com/chshersh/iris.git
-79:  build-depends:       , iris
-119:  autogen-modules:     Paths_iris
-120:  other-modules:       Paths_iris
-123:     , iris
-136:  autogen-modules:     Paths_iris
-137:  other-modules:       Paths_iris
-150:test-suite iris-test
-160:    Paths_iris
-164:    , iris
+ file name: iris.cabal 
+ 2:
+name:                iris
+ 7:
+    See [README.md](https://github.com/chshersh/iris#iris) for more details.
+ 8:
+homepage:            https://github.com/chshersh/iris
+ 9:
+bug-reports:         https://github.com/chshersh/iris/issues
+ 26:
+  location:            https://github.com/chshersh/iris.git
+ 79:
+  build-depends:       , iris
+ 119:
+  autogen-modules:     Paths_iris
+ 120:
+  other-modules:       Paths_iris
+ 123:
+     , iris
+ 136:
+  autogen-modules:     Paths_iris
+ 137:
+  other-modules:       Paths_iris
+ 150:
+test-suite iris-test
+ 160:
+    Paths_iris
+ 164:
+    , iris
 ```
