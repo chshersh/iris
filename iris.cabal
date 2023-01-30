@@ -143,6 +143,7 @@ executable simple-grep
      , mtl
      , optparse-applicative
      , text
+     , filepath
 
   ghc-options:         -threaded
                        -rtsopts

@@ -62,6 +62,7 @@ module Main (main) where
 import Prelude hiding (readFile)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
+import System.FilePath (takeFileName)
 
 import qualified Data.Text.Lazy as T
 import qualified Data.Text.Lazy.IO as TIO
@@ -181,11 +182,11 @@ app = do
     formattedPrinter "Starting grepping 🔥" Colourista.white
     file <- liftIO $ TIO.readFile filePath
 
-    let fileName = "file name: " `T.append` (last $ T.split (== '/') $ T.pack filePath)
+    let fileNameMessage = "file name: " `T.append` (T.pack $ takeFileName filePath)
     let linedFile = T.lines file
     let substringText = T.pack substring
 
-    formattedPrinter fileName Colourista.cyan
+    formattedPrinter fileNameMessage Colourista.cyan
 
     occurencesPrinter $ substringText `occurencesIn` linedFile
         where
@@ -235,33 +236,19 @@ And output with occurences of "iris":
 ```
 Starting grepping 🔥 
 
- file name: iris.cabal 
- 2:
-name:                iris
- 7:
-    See [README.md](https://github.com/chshersh/iris#iris) for more details.
- 8:
-homepage:            https://github.com/chshersh/iris
- 9:
-bug-reports:         https://github.com/chshersh/iris/issues
- 26:
-  location:            https://github.com/chshersh/iris.git
- 79:
-  build-depends:       , iris
- 119:
-  autogen-modules:     Paths_iris
- 120:
-  other-modules:       Paths_iris
- 123:
-     , iris
- 136:
-  autogen-modules:     Paths_iris
- 137:
-  other-modules:       Paths_iris
- 150:
-test-suite iris-test
- 160:
-    Paths_iris
- 164:
-    , iris
+file name: iris.cabal 
+2:name:                iris
+7:    See [README.md](https://github.com/chshersh/iris#iris) for more details.
+8:homepage:            https://github.com/chshersh/iris
+9:bug-reports:         https://github.com/chshersh/iris/issues
+26:  location:            https://github.com/chshersh/iris.git
+79:  build-depends:       , iris
+119:  autogen-modules:     Paths_iris
+120:  other-modules:       Paths_iris
+123:     , iris
+136:  autogen-modules:     Paths_iris
+137:  other-modules:       Paths_iris
+150:test-suite iris-test
+160:    Paths_iris
+164:    , iris
 ```
