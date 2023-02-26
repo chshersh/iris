@@ -1,254 +1,413 @@
 # Introduction
 
-There are an example of building [grep](https://www.gnu.org/software/grep/) or more suitable [ripgrep](https://github.com/BurntSushi/ripgrep) utilities with Iris.
+The file contains an introduction tutorial on building a simple CLI tool with
+Iris.
 
-This example can be executed via the below command:
+We're going to build a tool for finding finding lines that contain a given
+string in a given file. Like a very simple clone of
+[grep](https://www.gnu.org/software/grep/) or more modern
+[ripgrep](https://github.com/BurntSushi/ripgrep)
+
+The tool can be executed using `cabal` as shown in the following example:
 
 ```shell
-cabal exec simple-grep -- -f DIR -s TARGET_WORD
+cabal run simple-grep -- --file iris.cabal --search iris
 ```
 
-And will give the following result output:
+When run, you can expect to see output similar to the following:
 
-```shell
-> cabal exec simple-grep -- -f path/iris.cabal -s iris
-
-Starting grepping 🔥 
-
- file name: iris.cabal 
- 2:
-name:                iris
- 7:
-    See [README.md](https://github.com/chshersh/iris#iris) for more details.
- 8:
-homepage:            https://github.com/chshersh/iris
- 9:
-bug-reports:         https://github.com/chshersh/iris/issues
- 26:
-  location:            https://github.com/chshersh/iris.git
- 79:
-  build-depends:       , iris
- 119:
-  autogen-modules:     Paths_iris
- 120:
-  other-modules:       Paths_iris
- 123:
-     , iris
- 136:
-  autogen-modules:     Paths_iris
- 137:
-  other-modules:       Paths_iris
- 150:
-test-suite iris-test
- 160:
-    Paths_iris
- 164:
-    , iris
-```
-
-So, let's begin!
+![demo-simple-grep][https://raw.githubusercontent.com/chshersh/iris/main/images/demo-simple-grep.png]
 
 ## Preamble: imports and language extensions
 
-First of all, let's define imports and extensions at the head of the tutorial:
+Our simple example uses the following Haskell packages:
+
+* `base`: the Haskell standard library
+* `colourista`: a terminal output colouring library
+* `iris`: a Haskell CLI framework
+* `mtl`: a library with monad transformers
+* `text`: a library with the efficient `Text` type
+* `optparse-applicative`: a CLI options parser
+
+Since this is a literate Haskell file, we need to specify all our language
+pragmas and imports upfront.
+
+First, let's opt-in to some Haskell features not enabled by default:
 
 ```haskell
+{-# LANGUAGE ApplicativeDo #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NamedFieldPuns #-}
-
-
-module Main (main) where
-
-import Prelude hiding (readFile)
-import Control.Monad.IO.Class (MonadIO (..))
-import Control.Monad.Reader (MonadReader)
-import System.FilePath (takeFileName)
-
-import qualified Data.Text.Lazy as T
-import qualified Data.Text.Lazy.IO as TIO
-import qualified Options.Applicative as Opt
-
-import qualified Colourista
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE StrictData #-}
 ```
 
-So, we're writing a simple grep utility, we need here `Colourista` library for printing colored messages via the Iris app. Other libraries such as `Text` are standard for our specific task. `optparse-applicative` is needed here for defining the set of commands that Iris will consume.
+> We use several extensions for different parts:
+>
+> * `ApplicativeDo` to write nicer code for CLI with `optparse-applicative`
+> * `DerivingStrategies` to be explicit about how we derive typeclasses
+> * `GeneralizedNewtypeDeriving` to allow deriving of everything for `newtype`s
+> * `OverloadedStrings` to be able to work with `Text` easier
+> * `RecordWildCards` for non-verbose records
+> * `StrictData` to avoid space leaks
 
-Also, will be great to highlight Iris import's preferences separately. The matter of convention is to keep Iris import qualified, library was designed in that kind of stuff, so we could get functions and types via `Iris.makeSome`:
+Then, the `module` header:
+
+```haskell
+module Main (main) where
+```
+
+> Our tool is going to be rather small, so it could be put in a single file
+> which needs to export only the single `main` function.
+
+Now, imports from external libraries:
+
+```haskell
+import Control.Monad.IO.Class (MonadIO (..))
+import Control.Monad.Reader (MonadReader)
+import Data.Foldable (traverse_)
+import Data.Text (Text)
+
+import qualified Colourista
+import qualified Data.Text as Text
+import qualified Data.Text.IO as Text
+import qualified Options.Applicative as Opt
+```
+
+> We're writing a simple grep utility, we need here the `colourista` library for
+> printing colored messages. Other libraries such as `text` are standard for any
+> CLI tool. `optparse-applicative` is needed here for defining the set of
+> commands that Iris will consume.
+
+✨ Iris is designed for `qualified` imports. To get access to the entire API,
+write the following single line:
 
 ```haskell
 import qualified Iris
+```
+
+Finally, we import an autogenerated `Paths_*` file to get access to our tool
+metadata:
+
+```haskell
 import qualified Paths_iris as Autogen
 ```
 
-Second, we import autogenerated module after building the project with cabal. It is needed below for stubbing the `Iris.cliEnvSettingsVersionSettings` field in our case. It depends on your wishes on how to introduce the application's version, you could just load it from env variables or from whatever else.
+> Read more about `Paths_*` modules in the [Cabal documentation][paths-doc].
 
-## Core data types
+[paths-docs]: https://cabal.readthedocs.io/en/stable/cabal-package.html?highlight=Paths_*#accessing-data-files-from-package-code
 
-After imports, let's define our main monad and derive another helper classes:
+## CLI
+
+First, let's define CLI for `simple-grep`.
+
+Our tool takes two arguments:
+
+1. Path to the file for our search.
+2. A string to search for.
+
+These options can be represented as a simple record type:
+
+```haskell
+data Options = Options
+    { optionsFile   :: FilePath
+    , optionsSearch :: Text
+    }
+```
+
+After we defined the options data type, we can write a CLI parser using
+`optparse-applicative`.
+
+```haskell
+optionsP :: Opt.Parser Options
+optionsP = do
+    optionsFile <- Opt.strOption $ mconcat
+        [ Opt.long "file"
+        , Opt.short 'f'
+        , Opt.metavar "FILE_PATH"
+        , Opt.help "Path to the file"
+        ]
+
+    optionsSearch <- Opt.strOption $ mconcat
+        [ Opt.long "search"
+        , Opt.short 's'
+        , Opt.metavar "STRING"
+        , Opt.help "Substring to find and highlight"
+        ]
+
+    pure Options{..}
+```
+
+> Refer to [the `optparse-applicative` documentation][options-doc] for more details.
+
+[options-doc]: https://hackage.haskell.org/package/optparse-applicative
+
+## The Application Monad
+
+When using Iris, you're expected to implement your own `App` monad as a wrapper
+around `CliApp` from `iris`.
+
+To do this:
+
+* Create `newtype App a`
+* `CliApp cmd env a` has three type parameters, specialise them to your
+  application. In `simple-grep`:
+
+    * `cmd` is `Options`: our CLI options record type
+    * `env` is `()`: we won't need a custom environment in our simple tool
+    * `a` is `a`: a standard type for value inside the monadic context
+
+* Derive all the necessary typeclasses
+    * The important one is `MonadReader` because many functions in Iris are
+      polymorphic over monad and deriving this typeclass enables reusing them
+
+In code, it looks like this:
 
 ```haskell
 newtype App a = App
-    { unApp :: Iris.CliApp SimpleGrep () a
+    { unApp :: Iris.CliApp Options () a
     } deriving newtype
         ( Functor
         , Applicative
         , Monad
         , MonadIO
-        , MonadReader (Iris.CliEnv SimpleGrep ())
+        , MonadReader (Iris.CliEnv Options ())
         )
 ```
 
-`Iris.CliApp` here is the main monad of the library. This monad will consume our datatype of commands `SimpleGrep` in his first argument and in the second argument - application env datatype that might be empty depending on your wishes and goals. However, we can get application datatype by using `ask` or `Iris.asksCliEnv` in our `App` monad. Command datatype, after consuming, will be parsed and putted into `--help` list.
+## Settings
 
-Here's our commands for utility:
+To run the application, we need to configure it by providing _settings_. Iris
+has [the `CliEnvSettings` type][settings-doc] with multiple configuration
+options.
 
-```haskell
-data SimpleGrep = SimpleGrep
-    { filePath :: !String
-    , substring :: !String
-    }
-```
+[settings-doc]: https://hackage.haskell.org/package/iris/docs/Iris-Settings.html
 
-And, apart from other settings below, the definition of command parser in the language of `optparse-applicative`:
+In `simple-grep`, we want to specify the following:
 
-```haskell
-commandsSettings :: Opt.Parser SimpleGrep
-commandsSettings = SimpleGrep
-        <$> Opt.strOption
-            (  Opt.long "filePath"
-            <> Opt.short 'f'
-            <> Opt.metavar "PATH"
-            <> Opt.help "filePath to find and grep file"
-            )
-        <*> Opt.strOption
-            (  Opt.long "substring"
-            <> Opt.short 's'
-            <> Opt.metavar "TARGET"
-            <> Opt.help "Substring to find and highlight"
-            )
-```
+* Short header description
+* Longer program description that appears in the `--help` output
+* Version of our tool
+* CLI parser for our `Options` type
 
-After the creation of a base monad with data-type of commands, let's instantiate settings to Iris:
+The `CliEnvSettings cmd env` type has two type parameters:
+
+* `cmd`: the CLI command (this is our `Options` type)
+* `env`: custom application environment (again, this is just `()` as we don't have custom env)
+
+In code, it looks like this:
 
 ```haskell
-appSettings :: Iris.CliEnvSettings SimpleGrep ()
+appSettings :: Iris.CliEnvSettings Options ()
 appSettings = Iris.defaultCliEnvSettings
-    { Iris.cliEnvSettingsHeaderDesc = "Iris usage example"
-    , Iris.cliEnvSettingsProgDesc = "A simple grep utility"
+    { -- short description
+      Iris.cliEnvSettingsHeaderDesc = "Iris usage example"
+
+      -- longer description
+    , Iris.cliEnvSettingsProgDesc = "A simple grep utility - tutorial example"
+
+      -- a function to display the tool version
     , Iris.cliEnvSettingsVersionSettings =
         Just (Iris.defaultVersionSettings Autogen.version)
             { Iris.versionSettingsMkDesc = \v -> "Simple grep utility v" <> v
             }
 
-    , Iris.cliEnvSettingsCmdParser = commandsSettings
+      -- our 'Options' CLI parser
+    , Iris.cliEnvSettingsCmdParser = optionsP
     }
 ```
 
-We describe settings for the app based on `defaultCliEnvSettings`. It helps when we don't need some option to describe, so we can just skip it. Here we can write a CLI-program description, put required tools with a list and then pass commands with the `Parser a` type from `optparse-applicative` to the `cliEnvSettingsCmdParser` field.
+Our `appSettings` are created with the help of `defaultCliEnvSettings`. This way
+you can specify only relevant fields and be forward-compatible in case Iris
+introduces new settings options.
 
-Following next, for ensuring about our correctness on defined commands, we would check the `--help` flag's output:
+## Business logic
+
+Now, as we finished configuring our CLI application, we can finally start
+implementing the main logic of searching the content inside the files.
+
+We need three main parts:
+
+1. Read file content.
+2. Search for lines in the file.
+3. Output the result.
+
+### Reading the input file
+
+First, let's write a helper function for reading the content of the file:
+
+```haskell
+getFileContent :: FilePath -> App Text
+getFileContent = liftIO . Text.readFile
+```
+
+A few comments:
+
+* Our `getFileContent` function works in our `App` monad
+* The function takes `FilePath` and returns `Text`
+* We use `liftIO` to run an action of type `IO Text` as `App Text`
+  (this is possible because we derived `MonadIO` for `App` earlier)
+
+### Searching
+
+We want to output lines of text that contain our given substring as well as the
+line numbers.
+
+Following the **Imperative Shell, Functional Core** programming pattern, we can
+write a pure function that takes an input search term, file content and returns
+a list of pairs that contain the line number and line text:
+
+```haskell
+search :: Text -> Text -> [(Int, Text)]
+```
+
+The implementation of this function is straightforward in Functional
+Programming:
+
+```haskell
+search str
+    = filter (\(_i, line) -> str `Text.isInfixOf` line)
+    . zip [1 ..]
+    . Text.lines
+```
+
+### Output
+
+Now, once we find our lines, we would like to output the result. To make
+things more interesting and highlight a few more Iris features, we would like
+add a few more requirements to our output:
+
+1. Lines of text should be printed to `stdout` while liner numbers should go
+   `stderr`.
+2. Line numbers should be coloured and bold.
+
+We're going to use `colourista` for colouring. Iris provides helper functions
+for handling terminal colouring support and printing coloured output.
+
+Writing this in the code:
+
+```haskell
+output :: [(Int, Text)] -> App ()
+output = traverse_ outputLine
+  where
+    outputLine :: (Int, Text) -> App ()
+    outputLine (i, line) = do
+        outputLineNumber i
+        liftIO $ Text.putStrLn line
+
+    outputLineNumber :: Int -> App ()
+    outputLineNumber i = Iris.putStderrColoured
+        (Colourista.formatWith [Colourista.yellow, Colourista.bold])
+        (Text.pack (show i) <> ": ")
+```
+
+### Putting all together
+
+After we've implemented relevant parts, we're ready to put everything together.
+
+Our main steps are:
+
+1. Get the parsed CLI arguments.
+2. Read the file.
+3. Search for content.
+4. Output the result.
+
+For this, we can create the top-level function `app` and put all steps there:
+
+```haskell
+app :: App ()
+app = do
+    -- 1. Get parsed 'Options' from the environment
+    Options{..} <- Iris.asksCliEnv Iris.cliEnvCmd
+
+    -- 2. Read the file
+    fileContent <- getFileContent optionsFile
+
+    -- 3. Find all lines with numbers
+    let searchResult = search optionsSearch fileContent
+
+    -- 4. Output the result
+    output searchResult
+```
+
+The only thing left is to run our `app` function from `main`.
+
+This can be done by unwrapping `Iris.CliApp` from our `App` and providing
+settings to the `runCliApp` function:
+
+```haskell
+main :: IO ()
+main = Iris.runCliApp appSettings $ unApp app
+```
+
+A few final notes:
+
+* We've implemented only a parser for `Options` and specified our parser as a
+  field in `appSettings`. Iris will run the parser on the start and either throw
+  an exception on parsing errors or parse successfully and provide the result in
+  `CliEnv` in the `CliEnvApp`.
+* Parse CLI options are stored in the `cliEnvCmd` field of the Iris environment.
+* We get this field by calling the `asksCliEnv` function. Since our `App` type
+  derived `MonadReader` with the proper arguments, we can extract all the
+  environment fields.
+
+## Result
+
+Our simple tool is finished! Now, we can see its `--help` output to make sure
+that all the arguments are valid:
 
 ```shell
-> cabal exec simple-grep -- --help
+$ cabal run simple-grep -- --help
+```
 
+and the output:
+
+```
 Iris usage example
 
 Usage: simple-grep [--version] [--numeric-version] [--no-input]
-                   (-f|--filePath PATH) (-s|--substring ARG)
+                   (-f|--file FILE_PATH) (-s|--search STRING)
+                   [--colour | --no-colour]
 
-  A simple grep utility
+  A simple grep utility - tutorial example
 
 Available options:
   -h,--help                Show this help text
   --version                Show application version
   --numeric-version        Show only numeric application version
   --no-input               Enter the terminal in non-interactive mode
-  -f,--filePath PATH       filePath to find and grep file
-  -s,--substring ARG       Substring to find and highlight
+  -f,--file FILE_PATH      Path to the file
+  -s,--search STRING       Substring to find and highlight
+  --colour                 Enable colours
+  --no-colour              Disable colours
+
 ```
 
-How can we see it, commands were parsed by Iris and showed up in the output! Of course, the `--help` command will work after passing the `appSettings` to the application runner.
-
-## Main monad's do-calculation
-
-Finally, after setting up the configuration, we can describe our computation of CLI:
-
-```haskell
-app :: App ()
-app = do
-    SimpleGrep 
-        { filePath, substring } <- Iris.asksCliEnv Iris.cliEnvCmd
-
-    formattedPrinter "Starting grepping 🔥" Colourista.white
-    file <- liftIO $ TIO.readFile filePath
-
-    let fileNameMessage = "file name: " `T.append` (T.pack $ takeFileName filePath)
-    let linedFile = T.lines file
-    let substringText = T.pack substring
-
-    formattedPrinter fileNameMessage Colourista.cyan
-
-    occurencesPrinter $ substringText `occurencesIn` linedFile
-        where
-        formattedPrinter :: T.Text -> T.Text -> App ()
-        formattedPrinter txt colour =
-            Iris.putStderrColouredLn
-            (Colourista.formatWith [T.toStrict $ colour, Colourista.bold])
-            $ T.toStrict ("\n " `T.append` (txt) `T.append` " ")
-```
-
-Our main function and other not-important boilerplate functions for `grep`:
-
-```haskell
-main :: IO ()
-main = Iris.runCliApp appSettings $ unApp app
-
-occurencesIn :: T.Text ->  [T.Text] -> [(Int, T.Text)]
-occurencesIn str = filter (\(_lnNum, txt) -> str `T.isInfixOf` txt) . zip [1 .. ]
-
-occurencesPrinter :: [(Int, T.Text)] -> App ()
-occurencesPrinter = mapM_ unpack
-    where
-        unpack :: (Int, T.Text) -> App ()
-        unpack (idx, line) = do
-            printIdxWithColon idx
-            printLine line
-
-        printIdxWithColon :: Int -> App ()
-        printIdxWithColon idx = Iris.putStderrColouredLn
-          (Colourista.formatWith [Colourista.yellow, Colourista.bold])
-            $ (T.toStrict $ T.pack $ " " `mappend` show idx)
-              `mappend`
-              (T.toStrict $ T.pack ":")
-        printLine :: T.Text -> App ()
-        printLine x = Iris.putStdoutColouredLn
-            (Colourista.formatWith [T.toStrict $ T.empty]) $ T.toStrict x
-```
-
-So, we'd wish to execute all that stuff. Let's do it!
+And we can finally run it to see the result:
 
 ```shell
-cabal exec simple-grep -- -f /some/dir/iris/iris.cabal -s iris
+$ cabal exec simple-grep -- -f iris.cabal -s iris
+2: name:                iris
+7:     See [README.md](https://github.com/chshersh/iris#iris) for more details.
+8: homepage:            https://github.com/chshersh/iris
+9: bug-reports:         https://github.com/chshersh/iris/issues
+27:   location:            https://github.com/chshersh/iris.git
+82:   build-depends:       iris
+123:   autogen-modules:     Paths_iris
+124:   other-modules:       Paths_iris
+127:      , iris
+140:   autogen-modules:     Paths_iris
+141:   other-modules:       Paths_iris
+154: test-suite iris-test
+164:     Paths_iris
+168:     , iris
 ```
 
-And output with occurences of "iris":
+## Bonus challenges
 
-```
-Starting grepping 🔥 
+If you wish to hack on this example more, try implementing the following improvements in the tool:
 
-file name: iris.cabal 
-2:name:                iris
-7:    See [README.md](https://github.com/chshersh/iris#iris) for more details.
-8:homepage:            https://github.com/chshersh/iris
-9:bug-reports:         https://github.com/chshersh/iris/issues
-26:  location:            https://github.com/chshersh/iris.git
-79:  build-depends:       , iris
-119:  autogen-modules:     Paths_iris
-120:  other-modules:       Paths_iris
-123:     , iris
-136:  autogen-modules:     Paths_iris
-137:  other-modules:       Paths_iris
-150:test-suite iris-test
-160:    Paths_iris
-164:    , iris
-```
+* Add the `[-i | --ignore-case]` option to support the case-insensitive mode
+* Highlight the found part of the string inside the found line
+* Search in multiple files inside the directory

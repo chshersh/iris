@@ -75,9 +75,11 @@ common common-options
 
 common example-options
   import:              common-options
+
   if os(windows)
     buildable:         False
-  build-depends:       , iris
+
+  build-depends:       iris
 
   build-tool-depends:  markdown-unlit:markdown-unlit
   ghc-options:         -pgmL markdown-unlit
