@@ -9,13 +9,12 @@ the most positive outcome for contributors and maintainers! 💖
 
 ## How to contribute
 
-Everyone is welcome to contribute as long as they follow our [rules
-for polite and respectful
-communication](https://github.com/chshersh/iris/blob/main/CODE_OF_CONDUCT.md)!
+Everyone is welcome to contribute as long as they follow our
+[rules for polite and respectful communication](https://github.com/chshersh/iris/blob/main/CODE_OF_CONDUCT.md)!
 
 And you can contribute to Iris in multiple ways:
 
-1. Share your success stories or confusion moments in
+1. Share your success stories or confusion moments when using Iris under
    [Discussions](https://github.com/chshersh/iris/discussions).
 2. Open [Issues](https://github.com/chshersh/iris/issues) with bug
    reports or feature suggestions.
