@@ -21,7 +21,7 @@ import Iris.Cli.Internal (Cmd (..))
 import Iris.Cli.Version (mkVersionParser)
 import Iris.Settings (CliEnvSettings (..))
 
-import Iris.Cli.Colour (colourModeP)
+import Iris.Cli.Colour (colourOptionP)
 import qualified Options.Applicative as Opt
 
 {- |
@@ -45,6 +45,6 @@ cmdParserInfo CliEnvSettings{..} = Opt.info
     cmdP = do
       cmdInteractiveMode <- interactiveModeP
       cmdCmd <- cliEnvSettingsCmdParser
-      cmdColourOption <- colourModeP
+      cmdColourOption <- colourOptionP
 
       pure Cmd{..}

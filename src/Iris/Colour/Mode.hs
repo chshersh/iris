@@ -1,7 +1,6 @@
 {- |
 Module                  : Iris.Colour.Mode
-Copyright               : (c) 2020 Kowainik
-                          (c) 2022 Dmitrii Kovanikov
+Copyright               : 2022 Dmitrii Kovanikov
 SPDX-License-Identifier : MPL-2.0
 Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
 Stability               : Experimental
@@ -15,15 +14,19 @@ colouring.
 
 module Iris.Colour.Mode
     ( ColourMode (..)
+    , detectColourMode
+
+    -- * Internal
     , handleColourMode
-    , actualHandleColourMode
     ) where
 
-import Iris.Cli.TripleOption
-import Iris.Colour.Detect (detectColourDisabled)
+import Data.Char (toLower, toUpper)
+import Data.Maybe (isJust)
 import System.Console.ANSI (hSupportsANSIColor)
+import System.Environment (lookupEnv)
 import System.IO (Handle)
 
+import Iris.Cli.Colour (ColourOption (..))
 
 {- | Data type that tells whether the colouring is enabled or
 disabled. Its value is detected automatically on application start and
@@ -63,141 +66,88 @@ handleColourMode handle = do
     supportsANSI <- hSupportsANSIColor handle
     pure $ if supportsANSI then EnableColour else DisableColour
 
-{- | Returns 'ColourMode' of a 'Handle' accounting for environment and CLI
-options. You can use this function on output 'Handle's to find out whether
-they support colouring or not.
+{- | This function performs a full check of the 'Handle' colouring support, env
+variables and user-specified settings to detect whether the given handle
+supports colouring.
 
-Use a function like this to check whether you can print with colour
-to terminal:
+Per CLI Guidelines, the algorithm for detecting the colouring support is the
+following:
 
-@
-'handleColourMode' '(Just myappname)' 'AutoColour' 'System.IO.stdout'
-@
+__Disable color if your program is not in a terminal or the user requested it.
+These things should disable colors:__
+
+* @stdout@ or @stderr@ is not an interactive terminal (a TTY). It’s best to
+  individually check—if you’re piping stdout to another program, it’s still
+  useful to get colors on stderr.
+* The @NO_COLOR@ environment variable is set.
+* The @TERM@ environment variable has the value @dumb@.
+* The user passes the option @--no-color@.
+* You may also want to add a @MYAPP_NO_COLOR@ environment variable in case users
+  want to disable color specifically for your program.
+
+ℹ️ Iris performs this check on the application start automatically so you don't
+need to call this function manually.
 
 @since x.x.x.x
 -}
-actualHandleColourMode :: Maybe String -> TripleOption -> Handle ->  IO ColourMode
-actualHandleColourMode app colourOption handle = do
-    handleMode <- handleColourMode handle
-    colourDisabled <- detectColourDisabled app
-    pure $ case (handleMode,colourOption,colourDisabled) of
-        (DisableColour,_,_) -> DisableColour
-        (_,TOAlways,_)      -> EnableColour
-        (_,TONever,_)       -> DisableColour
-        (_,_,True)          -> DisableColour
-        (_,_,False)         -> EnableColour
+detectColourMode
+    :: Handle
+    -- ^ A terminal handle (e.g. 'System.IO.stderr')
+    -> ColourOption
+    -- ^ User settings
+    -> Maybe String
+    -- ^ Application name
+    -> IO ColourMode
+detectColourMode handle colour maybeAppName = case colour of
+    Never -> pure DisableColour
+    Always -> pure EnableColour
+    Auto -> autoDetectColour
+  where
+    autoDetectColour :: IO ColourMode
+    autoDetectColour = disabledToMode <$> checkIfDisabled
 
-{-
-------------------------
--- Original source code:
-------------------------
+    disabledToMode :: Bool -> ColourMode
+    disabledToMode isDisabled =
+        if isDisabled then DisableColour else EnableColour
 
-{-# OPTIONS_GHC -fno-warn-orphans #-}
+    checkIfDisabled :: IO Bool
+    checkIfDisabled = orM
+        [ isHandleColouringDisabled
+        , hasNoColourEnvVars
+        , isTermDumb
+        ]
 
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE ImplicitParams        #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
+    isHandleColouringDisabled :: IO Bool
+    isHandleColouringDisabled = (== DisableColour) <$> handleColourMode handle
 
-{- |
-Copyright: (c) 2020 Kowainik
-SPDX-License-Identifier: MPL-2.0
-Maintainer: Kowainik <xrom.xkov@gmail.com>
+    hasNoColourEnvVars :: IO Bool
+    hasNoColourEnvVars = orM $ map hasEnvVar allVarNames
 
-The 'ColourMode' data type that allows disabling and enabling of
-colouring. Implemented using the [Implicit Parameters](https://downloads.haskell.org/ghc/latest/docs/html/users_guide/glasgow_exts.html#implicit-parameters)
-GHC feature.
+    isTermDumb :: IO Bool
+    isTermDumb = lookupEnv "TERM" >>= \mVal -> pure $ case mVal of
+        Nothing -> False
+        Just val -> map toLower val == "dumb"
 
-By default, all formatting and printing functions in @colourista@
-print with colour. However, you control this behaviour by adding the
-@HasColourMode@ constraint to your functions and setting the value of
-the implicit @?colourMode@ variable.
+    hasEnvVar :: String -> IO Bool
+    hasEnvVar var = isJust <$> lookupEnv var
 
-@since 0.2.0.0
--}
+    noColourVarNames :: [String]
+    noColourVarNames = ["NO_COLOR", "NO_COLOUR"]
 
-module Colourista.Mode
-    ( ColourMode (..)
-    , HasColourMode
-    , withColourMode
-    , handleColourMode
-    ) where
+    prepend :: String -> String -> String
+    prepend appName envName = map toUpper appName <> "_" <> envName
 
-import System.IO (Handle)
-import System.Console.ANSI (hSupportsANSIWithoutEmulation)
-import Data.String (IsString)
+    allVarNames :: [String]
+    allVarNames = case maybeAppName of
+        Nothing      -> noColourVarNames
+        Just appName -> noColourVarNames <> map (prepend appName) noColourVarNames
 
-import GHC.Classes (IP (..))
+(||^) :: Monad m => m Bool -> m Bool -> m Bool
+mx ||^ my = do
+  x <- mx
+  if x
+    then pure True
+    else my
 
-
-{- | Data type that tells whether the colouring is enabled or
-disabled. It's used with the @-XImplicitParams@ GHC extension.
-
-@since 0.2.0.0
--}
-data ColourMode
-    = DisableColour
-    | EnableColour
-    deriving stock (Show, Eq, Enum, Bounded)
-
-{- | Magic instance to set the value of the implicit variable
-@?colourMode@ to 'EnableColour' by default. Equivalent to the
-following code:
-
-@
-?colourMode = 'EnableColour'
-@
-
-However, you still can override @?colourMode@ with any possible value.
-
-@since 0.2.0.0
--}
-instance IP "colourMode" ColourMode where
-    ip = EnableColour
-
-{- | Constraint that stores 'ColourMode' as an implicit parameter.
-
-@since 0.2.0.0
--}
-type HasColourMode = (?colourMode :: ColourMode)
-
-{- | Helper function for writing custom formatter. The function takes
-'ColourMode' from the implicit parameter context and either returns a
-given string or an empty string.
-
-@since 0.2.0.0
--}
-withColourMode :: (HasColourMode, IsString str) => str -> str
-withColourMode str = case ?colourMode of
-    EnableColour  -> str
-    DisableColour -> ""
-{-# INLINE withColourMode #-}
-
-{- | Returns 'ColourMode' of a 'Handle'. You can use this function on
-output 'Handle's to find out whether they support colouring or
-now. Use this function like this to check whether you can print with
-colour to terminal:
-
-@
-'handleColourMode' 'System.IO.stdout'
-@
-
-Typical usage can look like this:
-
-@
-main :: IO ()
-main = do
-    colourMode <- 'handleColourMode' 'System.IO.stdout'
-    let ?colourMode = fromMaybe 'DisableColour'
-    'Colourista.IO.successMessage' "Success!"
-@
-
-@since 0.2.0.0
--}
-handleColourMode :: Handle -> IO (Maybe ColourMode)
-handleColourMode handle = do
-    supportsANSI <- hSupportsANSIWithoutEmulation handle
-    pure $ fmap
-        (\supportsColour -> if supportsColour then EnableColour else DisableColour)
-        supportsANSI
--}
+orM :: Monad m => [m Bool] -> m Bool
+orM = foldr (||^) (pure False)
