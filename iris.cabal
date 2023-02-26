@@ -73,17 +73,6 @@ common common-options
                        TypeApplications
                        ViewPatterns
 
-common example-options
-  import:              common-options
-
-  if os(windows)
-    buildable:         False
-
-  build-depends:       iris
-
-  build-tool-depends:  markdown-unlit:markdown-unlit
-  ghc-options:         -pgmL markdown-unlit
-
 library
   import:              common-options
   hs-source-dirs:      src
@@ -114,25 +103,6 @@ library
     , process              ^>= 1.6
     , text                  >= 1.2 && < 2.1
     , unliftio-core        ^>= 0.2
-
-executable simple-grep
-  import:              example-options
-  hs-source-dirs:      examples/simple-grep
-
-  main-is:             Main.lhs
-  autogen-modules:     Paths_iris
-  other-modules:       Paths_iris
-
-  build-depends:
-     , colourista ^>= 0.1
-     , mtl
-     , optparse-applicative
-     , text
-     , filepath
-
-  ghc-options:         -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
 
 test-suite iris-test
   import:              common-options
