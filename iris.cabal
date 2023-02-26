@@ -115,23 +115,6 @@ library
     , text                  >= 1.2 && < 2.1
     , unliftio-core        ^>= 0.2
 
-executable playground
-  import:              common-options
-  hs-source-dirs:      examples/playground
-
-  main-is:             Main.hs
-  autogen-modules:     Paths_iris
-  other-modules:       Paths_iris
-
-  build-depends:
-     , iris
-     , colourista >= 0.1.0.2
-     , mtl
-
-  ghc-options:         -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
-
 executable simple-grep
   import:              example-options
   hs-source-dirs:      examples/simple-grep
