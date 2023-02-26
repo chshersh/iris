@@ -1,0 +1,10 @@
+cradle:
+  cabal:
+    - path: "./src"
+      component: "lib:iris"
+
+    - path: "./test"
+      component: "iris:test:iris-test"
+
+    - path: "examples/simple-grep/./Main.lhs"
+      component: "simple-grep:exe:simple-grep"
