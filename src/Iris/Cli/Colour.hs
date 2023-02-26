@@ -1,40 +1,66 @@
 {- |
 Module                  : Iris.Cli.Colour
-Copyright               : (c) 2022 Dmitrii Kovanikov
+Copyright               : (c) 2023 Dmitrii Kovanikov
 SPDX-License-Identifier : MPL-2.0
 Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
 Stability               : Experimental
 Portability             : Portable
 
-CLI options parsing for @--Colour@ and @--Colour=<FILE_PATH>@.
+CLI parser for the @--colour@ and @--no-colour@ options.
 
 @since x.x.x.x
 -}
 
 module Iris.Cli.Colour
-    ( colourModeP
+    ( ColourOption (..)
+    , colourOptionP
     ) where
 
 import Control.Applicative ((<|>))
-import Data.Functor (($>))
-import Iris.Cli.TripleOption
+
 import qualified Options.Applicative as Opt
 
 
-{- | A CLI option parser for the requested colour mode
+{- | Data type that tells whether the user wants the colouring option enabled,
+disabled or autodetected.
+
+See 'colourOptionP' for the parser of this option.
 
 @since x.x.x.x
 -}
-colourModeP :: Opt.Parser TripleOption
-colourModeP =  colour <|> nocoulor <|> pure TOAuto
+data ColourOption
+    -- | @since x.x.x.x
+    = Always
+
+    -- | @since x.x.x.x
+    | Never
+
+    -- | @since x.x.x.x
+    | Auto
+    deriving stock
+        ( Show     -- ^ @since x.x.x.x
+        , Eq       -- ^ @since x.x.x.x
+        , Ord      -- ^ @since x.x.x.x
+        , Enum     -- ^ @since x.x.x.x
+        , Bounded  -- ^ @since x.x.x.x
+        )
+
+{- | A CLI option parser for the desired coloured output mode in the terminal.
+
+It parses @--colour@ and @--no-colour@ flags explicitly. Otherwise, it defaults
+to 'Auto'.
+
+@since x.x.x.x
+-}
+colourOptionP :: Opt.Parser ColourOption
+colourOptionP =  alwaysP <|> neverP <|> pure Auto
     where
-        colour = (
-                Opt.flag' TOAlways ( Opt.long "colour" <> Opt.help "Enable colours")
-            <|> Opt.flag' TOAlways ( Opt.long "color" <> Opt.internal)
-            ) $> TOAlways
-        nocoulor = (
-                Opt.flag' TOAlways ( Opt.long "no-colour" <> Opt.help "Disable colours")
-            <|> Opt.flag' TOAlways ( Opt.long "no-color" <> Opt.internal)
-            <|> Opt.flag' TOAlways ( Opt.long "disable-color" <> Opt.internal)
-            <|> Opt.flag' TOAlways ( Opt.long "disable-coulor" <> Opt.internal)
-            ) $> TONever
+        alwaysP
+            =   Opt.flag' Always ( Opt.long "colour" <> Opt.help "Always output colours")
+            <|> Opt.flag' Always ( Opt.long "color" <> Opt.internal)
+
+        neverP
+            =   Opt.flag' Never ( Opt.long "no-colour" <> Opt.help "Never output colours")
+            <|> Opt.flag' Never ( Opt.long "no-color" <> Opt.internal)
+            <|> Opt.flag' Never ( Opt.long "disable-color" <> Opt.internal)
+            <|> Opt.flag' Never ( Opt.long "disable-coulor" <> Opt.internal)

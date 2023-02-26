@@ -76,25 +76,25 @@ common common-options
 library
   import:              common-options
   hs-source-dirs:      src
+
   exposed-modules:
     Iris
       Iris.App
       Iris.Browse
       Iris.Cli
         Iris.Cli.Browse
+        Iris.Cli.Colour
         Iris.Cli.Internal
         Iris.Cli.Interactive
         Iris.Cli.ParserInfo
         Iris.Cli.Version
-        Iris.Cli.TripleOption
       Iris.Colour
-        Iris.Cli.Colour
-          Iris.Colour.Detect
         Iris.Colour.Formatting
         Iris.Colour.Mode
       Iris.Env
       Iris.Settings
       Iris.Tool
+
   build-depends:
     , ansi-terminal        ^>= 0.11
     , directory            ^>= 1.3
@@ -111,11 +111,13 @@ test-suite iris-test
   main-is:             Spec.hs
 
   other-modules:
-    Test.Iris
-      Test.Iris.Tool
-      Test.Iris.Cli
     Paths_iris
-
+    Test.Iris
+      Test.Iris.Common
+      Test.Iris.Cli
+      Test.Iris.Colour
+        Test.Iris.Colour.Mode
+      Test.Iris.Tool
 
   build-depends:
     , iris
@@ -123,6 +125,7 @@ test-suite iris-test
     , text
     , optparse-applicative
 
-  ghc-options:         -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
+  ghc-options:
+    -threaded
+    -rtsopts
+    -with-rtsopts=-N
