@@ -35,7 +35,7 @@ Iris development is guided by the following principles:
 1. **Support [Command Line Interface Guidelines](https://clig.dev/).**
    Features or changes that violate these guidelines are not accepted
    in the project.
-2. **Beginner-friendliess.** Haskell beginners should be able to build
+2. **Beginner-friendliness.** Haskell beginners should be able to build
    CLI applications with Iris. Hence, the implementation of Iris API
    that uses less fancy Haskell features are preferred. When the
    complexity is justified, the cost of introducing this extra
@@ -49,6 +49,13 @@ Iris development is guided by the following principles:
 
    > **NOTE:** Currently, Iris may lack documentation but there's an
    > ongoing effort to improve the situation.
+
+5. **Single-line access.** Iris is designed for qualified imports, and you
+   should be able to get all the needed API by writing a single import line:
+
+   ```haskell
+   import qualified Iris
+   ```
 
 🧱 Iris focuses solely on CLI applications. If you're interested in
 building TUI app with Haskell, check out
@@ -70,7 +77,12 @@ CLI apps built with Iris offer the following features for end users:
     * `--no-colour`: to disable terminal colouring
 * Utilities to open files in a browser
 
-## How to use?
+## Quick Start Guide
+
+> 📚 Refer to [the complete Iris tutorial][simple-grep] for more details and
+> examples of more Iris features.
+
+[simple-grep]: https://github.com/chshersh/iris/blob/main/examples/simple-grep/README.md
 
 `iris` is compatible with the following GHC
 versions - [supported versions](https://matrix.hackage.haskell.org/#/package/iris)
@@ -91,6 +103,7 @@ will need to set it up with these steps:
 2. To use this package, refer to the below example.
 
    ```haskell
+   {-# LANGUAGE DerivingStrategies #-}
    {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
    module Main (main) where
@@ -173,9 +186,9 @@ necessary tools. If you have GHCup installed but miss some of the
 tooling for some reason, type the following commands in the terminal:
 
 ```shell
-ghcup install ghc 8.10.7
-ghcup set     ghc 8.10.7
-ghcup install cabal 3.6.2.0
+ghcup install ghc 9.2.5
+ghcup set     ghc 9.2.5
+ghcup install cabal 3.8.1.0
 ```
 
 > If you are using Linux or macOS, you may find `ghcup tui` command a
