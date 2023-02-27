@@ -5,20 +5,31 @@ import Data.Version (Version, makeVersion, parseVersion)
 import Test.Hspec (Spec, describe, it, shouldReturn, shouldSatisfy, shouldThrow)
 import Text.ParserCombinators.ReadP (readP_to_S)
 
-import Iris.Tool (Tool (..), ToolCheckResult (..), ToolCheckError (..), ToolSelector (..), checkTool, ToolCheckException(..),
-                  defaultToolSelector, need)
+import Iris.Tool (
+    Tool (..),
+    ToolCheckError (..),
+    ToolCheckException (..),
+    ToolCheckResult (..),
+    ToolSelector (..),
+    checkTool,
+    defaultToolSelector,
+    need,
+ )
 
 import qualified Data.Text as Text
 
 ghc100 :: Tool
-ghc100 = "ghc"
-    { toolSelector = Just defaultToolSelector
-        { toolSelectorFunction = \version -> case getVersion version of
-                Nothing -> False
-                Just v  -> v >= makeVersion [100]
-        , toolSelectorVersionArg = Just "--numeric-version"
+ghc100 =
+    "ghc"
+        { toolSelector =
+            Just
+                defaultToolSelector
+                    { toolSelectorFunction = \version -> case getVersion version of
+                        Nothing -> False
+                        Just v -> v >= makeVersion [100]
+                    , toolSelectorVersionArg = Just "--numeric-version"
+                    }
         }
-    }
 
 toolSpec :: Spec
 toolSpec = describe "Tool" $ do
@@ -32,7 +43,7 @@ toolSpec = describe "Tool" $ do
     it "shouldn't find 'ghc' version 100" $ do
         let isToolWrongVersion :: ToolCheckResult -> Bool
             isToolWrongVersion (ToolCheckError (ToolWrongVersion _)) = True
-            isToolWrongVersion _other               = False
+            isToolWrongVersion _other = False
 
         checkTool ghc100 >>= (`shouldSatisfy` isToolWrongVersion)
 
@@ -42,15 +53,14 @@ toolSpec = describe "Tool" $ do
         let tool = "xxx_unknown_executable"
         let expectedExceptionSel (err :: ToolCheckException) = case err of
                 ToolCheckException (ToolNotFound e) -> e == tool
-                _other                          -> False
+                _other -> False
 
         need [Tool tool Nothing] `shouldThrow` expectedExceptionSel
 
     it "should fail when 'need'ing tools with wrong version" $ do
-
         let expectedExceptionSel (err :: ToolCheckException) = case err of
                 ToolCheckException (ToolWrongVersion _) -> True
-                _other                          -> False
+                _other -> False
         need [ghc100] `shouldThrow` expectedExceptionSel
 
 getVersion :: Text -> Maybe Version
@@ -58,4 +68,4 @@ getVersion = extractVersion . readP_to_S parseVersion . Text.unpack
   where
     extractVersion :: [(Version, String)] -> Maybe Version
     extractVersion [(version, "")] = Just version
-    extractVersion _               = Nothing
+    extractVersion _ = Nothing

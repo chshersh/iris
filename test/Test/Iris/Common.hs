@@ -1,6 +1,6 @@
-module Test.Iris.Common
-    ( checkCI
-    ) where
+module Test.Iris.Common (
+    checkCI,
+) where
 
 import Data.Maybe (isJust)
 import System.Environment (lookupEnv)

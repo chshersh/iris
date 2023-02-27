@@ -10,19 +10,18 @@ CLI options parsing.
 
 @since 0.0.0.0
 -}
-
-module Iris.Cli
-    ( -- $browse
-      module Iris.Cli.Browse
-      -- $parserInfo
-    , module Iris.Cli.ParserInfo
-      -- $version
-    , module Iris.Cli.Version
-    ) where
+module Iris.Cli (
+    -- $browse
+    module Iris.Cli.Browse,
+    -- $parserInfo
+    module Iris.Cli.ParserInfo,
+    -- $version
+    module Iris.Cli.Version,
+) where
 
 import Iris.Cli.Browse
-import Iris.Cli.Version
 import Iris.Cli.ParserInfo
+import Iris.Cli.Version
 
 {- $browse
 CLI parsers for @--browse@ flags.

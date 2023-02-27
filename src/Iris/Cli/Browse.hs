@@ -10,11 +10,10 @@ CLI options parsing for @--browse@ and @--browse=FILE_PATH@.
 
 @since 0.0.0.0
 -}
-
-module Iris.Cli.Browse
-    ( browseP
-    , browseFileP
-    ) where
+module Iris.Cli.Browse (
+    browseP,
+    browseFileP,
+) where
 
 import qualified Options.Applicative as Opt
 
@@ -27,12 +26,15 @@ browser.
 @since 0.0.0.0
 -}
 browseP
-    :: String  -- ^ Flag description
+    :: String
+    -- ^ Flag description
     -> Opt.Parser Bool
-browseP description = Opt.switch $ mconcat
-    [ Opt.long "browse"
-    , Opt.help description
-    ]
+browseP description =
+    Opt.switch $
+        mconcat
+            [ Opt.long "browse"
+            , Opt.help description
+            ]
 
 {- | A CLI option parser for a 'FilePath' that needs to be open with a browser.
 
@@ -41,10 +43,13 @@ Use 'Iris.Browse.openInBrowser' to open the passed file in a browser.
 @since 0.0.0.0
 -}
 browseFileP
-    :: String  -- ^ Flag description
+    :: String
+    -- ^ Flag description
     -> Opt.Parser FilePath
-browseFileP description = Opt.option Opt.str $ mconcat
-    [ Opt.long "browse"
-    , Opt.metavar "FILE_PATH"
-    , Opt.help description
-    ]
+browseFileP description =
+    Opt.option Opt.str $
+        mconcat
+            [ Opt.long "browse"
+            , Opt.metavar "FILE_PATH"
+            , Opt.help description
+            ]

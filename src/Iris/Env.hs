@@ -1,4 +1,4 @@
-{-# LANGUAGE ApplicativeDo    #-}
+{-# LANGUAGE ApplicativeDo #-}
 {-# LANGUAGE FlexibleContexts #-}
 
 {- |
@@ -13,18 +13,17 @@ Environment of a CLI app.
 
 @since 0.0.0.0
 -}
+module Iris.Env (
+    -- * CLI application environment
 
+    -- ** Constructing
+    CliEnv (..),
+    mkCliEnv,
 
-module Iris.Env
-    ( -- * CLI application environment
-      -- ** Constructing
-      CliEnv (..)
-    , mkCliEnv
-
-      -- ** Querying
-    , asksCliEnv
-    , asksAppEnv
-    ) where
+    -- ** Querying
+    asksCliEnv,
+    asksAppEnv,
+) where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Data.Kind (Type)
@@ -50,22 +49,17 @@ Has the following type parameters:
 @since 0.0.0.0
 -}
 data CliEnv (cmd :: Type) (appEnv :: Type) = CliEnv
-    { -- | @since 0.0.0.0
-      cliEnvCmd              :: cmd
-
-      -- | @since 0.0.0.0
+    { cliEnvCmd :: cmd
+    -- ^ @since 0.0.0.0
     , cliEnvStdoutColourMode :: ColourMode
-
-      -- | @since 0.0.0.0
+    -- ^ @since 0.0.0.0
     , cliEnvStderrColourMode :: ColourMode
-
-      -- | @since 0.0.0.0
-    , cliEnvAppEnv           :: appEnv
-
-      -- | @since 0.0.0.0
-    , cliEnvInteractiveMode  :: InteractiveMode
+    -- ^ @since 0.0.0.0
+    , cliEnvAppEnv :: appEnv
+    -- ^ @since 0.0.0.0
+    , cliEnvInteractiveMode :: InteractiveMode
+    -- ^ @since 0.0.0.0
     }
-
 
 {- |
 
@@ -73,7 +67,7 @@ data CliEnv (cmd :: Type) (appEnv :: Type) = CliEnv
 -}
 mkCliEnv
     :: forall cmd appEnv
-    .  CliEnvSettings cmd appEnv
+     . CliEnvSettings cmd appEnv
     -> IO (CliEnv cmd appEnv)
 mkCliEnv cliEnvSettings@CliEnvSettings{..} = do
     Cmd{..} <- Opt.execParser $ cmdParserInfo cliEnvSettings
@@ -81,13 +75,14 @@ mkCliEnv cliEnvSettings@CliEnvSettings{..} = do
     stderrColourMode <- detectColourMode stderr cmdColourOption cliEnvSettingsAppName
     interactive <- handleInteractiveMode cmdInteractiveMode
 
-    pure CliEnv
-        { cliEnvCmd              = cmdCmd
-        , cliEnvStdoutColourMode = stdoutColourMode
-        , cliEnvStderrColourMode = stderrColourMode
-        , cliEnvAppEnv           = cliEnvSettingsAppEnv
-        , cliEnvInteractiveMode  = interactive
-        }
+    pure
+        CliEnv
+            { cliEnvCmd = cmdCmd
+            , cliEnvStdoutColourMode = stdoutColourMode
+            , cliEnvStderrColourMode = stderrColourMode
+            , cliEnvAppEnv = cliEnvSettingsAppEnv
+            , cliEnvInteractiveMode = interactive
+            }
 
 {- | Get a field from the global environment 'CliEnv'.
 

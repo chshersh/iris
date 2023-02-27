@@ -1,4 +1,4 @@
-{-# LANGUAGE ApplicativeDo    #-}
+{-# LANGUAGE ApplicativeDo #-}
 {-# LANGUAGE FlexibleContexts #-}
 
 {- |
@@ -13,7 +13,6 @@ Parser information for the default CLI parser.
 
 @since 0.0.0.0
 -}
-
 module Iris.Cli.ParserInfo (cmdParserInfo) where
 
 import Iris.Cli.Interactive (interactiveModeP)
@@ -28,22 +27,23 @@ import qualified Options.Applicative as Opt
 
 @since 0.0.0.0
 -}
-cmdParserInfo :: forall cmd appEnv . CliEnvSettings cmd appEnv -> Opt.ParserInfo (Cmd cmd)
-cmdParserInfo CliEnvSettings{..} = Opt.info
-  ( Opt.helper
-  <*> mkVersionParser cliEnvSettingsVersionSettings
-  <*> cmdP
-  )
-  $ mconcat
-      [ Opt.fullDesc
-      , Opt.header cliEnvSettingsHeaderDesc
-      , Opt.progDesc cliEnvSettingsProgDesc
-      ]
+cmdParserInfo :: forall cmd appEnv. CliEnvSettings cmd appEnv -> Opt.ParserInfo (Cmd cmd)
+cmdParserInfo CliEnvSettings{..} =
+    Opt.info
+        ( Opt.helper
+            <*> mkVersionParser cliEnvSettingsVersionSettings
+            <*> cmdP
+        )
+        $ mconcat
+            [ Opt.fullDesc
+            , Opt.header cliEnvSettingsHeaderDesc
+            , Opt.progDesc cliEnvSettingsProgDesc
+            ]
   where
     cmdP :: Opt.Parser (Cmd cmd)
     cmdP = do
-      cmdInteractiveMode <- interactiveModeP
-      cmdCmd <- cliEnvSettingsCmdParser
-      cmdColourOption <- colourOptionP
+        cmdInteractiveMode <- interactiveModeP
+        cmdCmd <- cliEnvSettingsCmdParser
+        cmdColourOption <- colourOptionP
 
-      pure Cmd{..}
+        pure Cmd{..}

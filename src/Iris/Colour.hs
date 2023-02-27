@@ -10,13 +10,12 @@ Functions to handle colouring of the output to terminal.
 
 @since 0.0.0.0
 -}
-
-module Iris.Colour
-    ( -- $mode
-      module Iris.Colour.Mode
-      -- $formatting
-    , module Iris.Colour.Formatting
-    ) where
+module Iris.Colour (
+    -- $mode
+    module Iris.Colour.Mode,
+    -- $formatting
+    module Iris.Colour.Formatting,
+) where
 
 import Iris.Colour.Formatting
 import Iris.Colour.Mode
