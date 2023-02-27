@@ -24,8 +24,9 @@ modeSpec = before_ clearAppEnv $ describe "Mode" $ do
         detectStderrColour Always `shouldReturn` EnableColour
 
     it "EnableColour in clear environment" $ do
-        detectStdoutColour Auto `shouldReturn` EnableColour
-        detectStderrColour Auto `shouldReturn` EnableColour
+        ciColour <- colourWithCI
+        detectStdoutColour Auto `shouldReturn` ciColour
+        detectStderrColour Auto `shouldReturn` ciColour
 
     it "DisableColour when NO_COLOR is set" $ do
         setEnv "NO_COLOR" "1"
@@ -54,13 +55,12 @@ modeSpec = before_ clearAppEnv $ describe "Mode" $ do
 
     it "EnableColour when TERM=xterm-256color" $ do
         setEnv "TERM" "xterm-256color"
-        detectStdoutColour Auto `shouldReturn` EnableColour
-        detectStderrColour Auto `shouldReturn` EnableColour
+        ciColour <- colourWithCI
+        detectStdoutColour Auto `shouldReturn` ciColour
+        detectStderrColour Auto `shouldReturn` ciColour
 
     it "DisableColour when CI is set" $ do
-        isCi <- checkCI
-        let ciColour = if isCi then DisableColour else EnableColour
-
+        ciColour <- colourWithCI
         detectStdoutColour Auto `shouldReturn` ciColour
         detectStderrColour Auto `shouldReturn` ciColour
 
@@ -77,3 +77,8 @@ testEnvVars =
 
 clearAppEnv :: IO ()
 clearAppEnv = for_ testEnvVars unsetEnv
+
+colourWithCI :: IO ColourMode
+colourWithCI = do
+    isCi <- checkCI
+    pure $ if isCi then DisableColour else EnableColour
