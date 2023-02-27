@@ -113,6 +113,12 @@ jobs:
         run: |
           stack test --system-ghc
 
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: fourmolu/fourmolu-action@v1
+
   hlint:
     runs-on: ubuntu-latest
     steps:
