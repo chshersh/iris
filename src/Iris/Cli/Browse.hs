@@ -6,7 +6,7 @@ Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
 Stability               : Experimental
 Portability             : Portable
 
-CLI options parsing for @--browse@ and @--browse=<FILE_PATH>@.
+CLI options parsing for @--browse@ and @--browse=FILE_PATH@.
 
 @since 0.0.0.0
 -}

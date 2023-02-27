@@ -27,6 +27,10 @@ following steps:
 That's all! Now, you can write your CLI app by having access to all
 capabilities provided by __Iris__ 🎉
 
+For a detailed introduction to __Iris__, refer to the following examples:
+
+* [Simple Grep Example](https://github.com/chshersh/iris/blob/main/examples/simple-grep/README.md)
+
 @since 0.0.0.0
 -}
 
