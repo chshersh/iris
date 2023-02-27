@@ -1,9 +1,9 @@
 module Test.Iris.Colour.Mode (modeSpec) where
 
-import Test.Hspec (Spec, it, describe, shouldReturn, before_)
-import System.Environment (unsetEnv, setEnv)
 import Data.Foldable (for_)
-import System.IO (stdout, stderr)
+import System.Environment (setEnv, unsetEnv)
+import System.IO (stderr, stdout)
+import Test.Hspec (Spec, before_, describe, it, shouldReturn)
 
 import Iris.Cli.Colour (ColourOption (..))
 import Iris.Colour.Mode (ColourMode (..), detectColourMode)

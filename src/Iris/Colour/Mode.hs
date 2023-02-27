@@ -11,14 +11,13 @@ colouring.
 
 @since 0.0.0.0
 -}
-
-module Iris.Colour.Mode
-    ( ColourMode (..)
-    , detectColourMode
+module Iris.Colour.Mode (
+    ColourMode (..),
+    detectColourMode,
 
     -- * Internal
-    , handleColourMode
-    ) where
+    handleColourMode,
+) where
 
 import Data.Char (toLower, toUpper)
 import Data.Maybe (isJust)
@@ -35,17 +34,21 @@ stored in 'Iris.Env.CliEnv'.
 @since 0.0.0.0
 -}
 data ColourMode
-    -- | @since 0.0.0.0
-    = DisableColour
-
-    -- | @since 0.0.0.0
-    | EnableColour
+    = -- | @since 0.0.0.0
+      DisableColour
+    | -- | @since 0.0.0.0
+      EnableColour
     deriving stock
-        ( Show     -- ^ @since 0.0.0.0
-        , Eq       -- ^ @since 0.0.0.0
-        , Ord      -- ^ @since 0.0.0.0
-        , Enum     -- ^ @since 0.0.0.0
-        , Bounded  -- ^ @since 0.0.0.0
+        ( Show
+          -- ^ @since 0.0.0.0
+        , Eq
+          -- ^ @since 0.0.0.0
+        , Ord
+          -- ^ @since 0.0.0.0
+        , Enum
+          -- ^ @since 0.0.0.0
+        , Bounded
+          -- ^ @since 0.0.0.0
         )
 
 {- | Returns 'ColourMode' of a 'Handle' ignoring environment and CLI options.
@@ -111,11 +114,12 @@ detectColourMode handle colour maybeAppName = case colour of
         if isDisabled then DisableColour else EnableColour
 
     checkIfDisabled :: IO Bool
-    checkIfDisabled = orM
-        [ isHandleColouringDisabled
-        , hasNoColourEnvVars
-        , isTermDumb
-        ]
+    checkIfDisabled =
+        orM
+            [ isHandleColouringDisabled
+            , hasNoColourEnvVars
+            , isTermDumb
+            ]
 
     isHandleColouringDisabled :: IO Bool
     isHandleColouringDisabled = (== DisableColour) <$> handleColourMode handle
@@ -124,9 +128,10 @@ detectColourMode handle colour maybeAppName = case colour of
     hasNoColourEnvVars = orM $ map hasEnvVar allVarNames
 
     isTermDumb :: IO Bool
-    isTermDumb = lookupEnv "TERM" >>= \mVal -> pure $ case mVal of
-        Nothing -> False
-        Just val -> map toLower val == "dumb"
+    isTermDumb =
+        lookupEnv "TERM" >>= \mVal -> pure $ case mVal of
+            Nothing -> False
+            Just val -> map toLower val == "dumb"
 
     hasEnvVar :: String -> IO Bool
     hasEnvVar var = isJust <$> lookupEnv var
@@ -139,15 +144,15 @@ detectColourMode handle colour maybeAppName = case colour of
 
     allVarNames :: [String]
     allVarNames = case maybeAppName of
-        Nothing      -> noColourVarNames
+        Nothing -> noColourVarNames
         Just appName -> noColourVarNames <> map (prepend appName) noColourVarNames
 
 (||^) :: Monad m => m Bool -> m Bool -> m Bool
 mx ||^ my = do
-  x <- mx
-  if x
-    then pure True
-    else my
+    x <- mx
+    if x
+        then pure True
+        else my
 
 orM :: Monad m => [m Bool] -> m Bool
 orM = foldr (||^) (pure False)

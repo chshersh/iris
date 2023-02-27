@@ -12,34 +12,31 @@ __Enabled with config__
 
 @since 0.0.0.0
 -}
+module Iris.Cli.Version (
+    -- * Settings
+    VersionSettings (..),
+    defaultVersionSettings,
 
-module Iris.Cli.Version
-    ( -- * Settings
-      VersionSettings (..)
-    , defaultVersionSettings
+    -- * CLI parser
+    fullVersionP,
 
-      -- * CLI parser
-    , fullVersionP
-
-      -- * Internal helpers
-    , mkVersionParser
-    ) where
+    -- * Internal helpers
+    mkVersionParser,
+) where
 
 import Data.Version (Version, showVersion)
 
 import qualified Options.Applicative as Opt
-
 
 {- |
 
 @since 0.0.0.0
 -}
 data VersionSettings = VersionSettings
-    { -- | @since 0.0.0.0
-      versionSettingsVersion :: Version
-
-      -- | @since 0.0.0.0
-    , versionSettingsMkDesc  :: String -> String
+    { versionSettingsVersion :: Version
+    -- ^ @since 0.0.0.0
+    , versionSettingsMkDesc :: String -> String
+    -- ^ @since 0.0.0.0
     }
 
 {- |
@@ -47,10 +44,11 @@ data VersionSettings = VersionSettings
 @since 0.0.0.0
 -}
 defaultVersionSettings :: Version -> VersionSettings
-defaultVersionSettings version = VersionSettings
-    { versionSettingsVersion = version
-    , versionSettingsMkDesc  = id
-    }
+defaultVersionSettings version =
+    VersionSettings
+        { versionSettingsVersion = version
+        , versionSettingsMkDesc = id
+        }
 
 {- |
 
@@ -70,13 +68,17 @@ fullVersionP VersionSettings{..} = versionP <*> numericVersionP
     versionStr = showVersion versionSettingsVersion
 
     versionP :: Opt.Parser (a -> a)
-    versionP = Opt.infoOption (versionSettingsMkDesc versionStr) $ mconcat
-       [ Opt.long "version"
-       , Opt.help "Show application version"
-       ]
+    versionP =
+        Opt.infoOption (versionSettingsMkDesc versionStr) $
+            mconcat
+                [ Opt.long "version"
+                , Opt.help "Show application version"
+                ]
 
     numericVersionP :: Opt.Parser (a -> a)
-    numericVersionP = Opt.infoOption versionStr $ mconcat
-       [ Opt.long "numeric-version"
-       , Opt.help "Show only numeric application version"
-       ]
+    numericVersionP =
+        Opt.infoOption versionStr $
+            mconcat
+                [ Opt.long "numeric-version"
+                , Opt.help "Show only numeric application version"
+                ]

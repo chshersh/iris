@@ -30,20 +30,18 @@ __newtype__ App a = App
 
 @since 0.0.0.0
 -}
-
-module Iris.App
-    ( CliApp (..)
-    , runCliApp
-    , runCliAppManually
-    ) where
+module Iris.App (
+    CliApp (..),
+    runCliApp,
+    runCliAppManually,
+) where
 
 import Control.Monad.IO.Class (MonadIO)
-import Control.Monad.Reader (MonadReader, ReaderT (..))
 import Control.Monad.IO.Unlift (MonadUnliftIO)
+import Control.Monad.Reader (MonadReader, ReaderT (..))
 
 import Iris.Env (CliEnv, mkCliEnv)
 import Iris.Settings (CliEnvSettings)
-
 
 {- | Main monad for your CLI application.
 
@@ -58,20 +56,22 @@ The type variables are:
 -}
 newtype CliApp cmd appEnv a = CliApp
     { unCliApp :: CliEnv cmd appEnv -> IO a
-    } deriving
+    }
+    deriving
         ( Functor
-        -- ^ @since 0.0.0.0
+          -- ^ @since 0.0.0.0
         , Applicative
-        -- ^ @since 0.0.0.0
+          -- ^ @since 0.0.0.0
         , Monad
-        -- ^ @since 0.0.0.0
+          -- ^ @since 0.0.0.0
         , MonadIO
-        -- ^ @since 0.0.0.0
+          -- ^ @since 0.0.0.0
         , MonadReader (CliEnv cmd appEnv)
-        -- ^ @since 0.0.0.0
+          -- ^ @since 0.0.0.0
         , MonadUnliftIO
-        -- ^ @since 0.0.0.0
-        ) via ReaderT (CliEnv cmd appEnv) IO
+          -- ^ @since 0.0.0.0
+        )
+        via ReaderT (CliEnv cmd appEnv) IO
 
 {- | Run application with settings.
 

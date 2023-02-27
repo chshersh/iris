@@ -42,13 +42,15 @@ Generally, the process of submitting, reviewing and accepting PRs
 should be as lightweight as possible if you've discussed the
 implementation beforehand. However, there're still a few requirements:
 
-1. Code changes should follow the
-   [Kowainik Haskell Style Guide](https://kowainik.github.io/posts/2019-02-06-style-guide).
-   Your changes may be rejected if they don't follow this style
-   guide. General rule: don't change the formatting of already
-   existing files.
+1. The code should be formatted with [fourmolu][fourmolu]
+   using the [Iris-specific configuration][fourmolu-config].
+   Your changes will be rejected if they don't follow the formatting
+   requirements.
 2. Be polite and respectful in communications. Follow our
    [Code of Conduct](https://github.com/chshersh/iris/blob/main/CODE_OF_CONDUCT.md).
+
+[fourmolu]: https://hackage.haskell.org/package/fourmolu
+[fourmolu-config]: https://github.com/chshersh/iris/blob/main/fourmolu.yaml
 
 That's all so far!
 

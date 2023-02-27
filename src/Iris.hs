@@ -33,23 +33,22 @@ For a detailed introduction to __Iris__, refer to the following examples:
 
 @since 0.0.0.0
 -}
-
-module Iris
-    ( -- $app
-      module Iris.App
-      -- $browse
-    , module Iris.Browse
-      -- $cli
-    , module Iris.Cli
-      -- $colour
-    , module Iris.Colour
-      -- $env
-    , module Iris.Env
-      -- $settings
-    , module Iris.Settings
-      -- $tool
-    , module Iris.Tool
-    ) where
+module Iris (
+    -- $app
+    module Iris.App,
+    -- $browse
+    module Iris.Browse,
+    -- $cli
+    module Iris.Cli,
+    -- $colour
+    module Iris.Colour,
+    -- $env
+    module Iris.Env,
+    -- $settings
+    module Iris.Settings,
+    -- $tool
+    module Iris.Tool,
+) where
 
 import Iris.App
 import Iris.Browse

@@ -12,18 +12,17 @@ Helper functions to print with colouring.
 
 @since 0.0.0.0
 -}
-
-module Iris.Colour.Formatting
-    ( putStdoutColouredLn
-    , putStderrColouredLn
-    , putStdoutColoured
-    , putStderrColoured
-    ) where
+module Iris.Colour.Formatting (
+    putStdoutColouredLn,
+    putStderrColouredLn,
+    putStdoutColoured,
+    putStderrColoured,
+) where
 
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
-import qualified Data.Text.IO as T
 import Data.Text (Text)
+import qualified Data.Text.IO as T
 import System.IO (stderr)
 
 import Iris.Colour.Mode (ColourMode (..))
@@ -55,7 +54,7 @@ putStdoutColouredLn formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStdoutColourMode
     liftIO $ T.putStrLn $ case colourMode of
         DisableColour -> str
-        EnableColour  -> formatWithColour str
+        EnableColour -> formatWithColour str
 
 {- | Print 'Text' to 'System.IO.stderr' by providing a custom
 formatting function.
@@ -81,7 +80,7 @@ putStderrColouredLn formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStderrColourMode
     liftIO $ T.hPutStrLn stderr $ case colourMode of
         DisableColour -> str
-        EnableColour  -> formatWithColour str
+        EnableColour -> formatWithColour str
 
 {- | Print 'Text' to 'System.IO.stdout' by providing a custom
 formatting function. Doesn't breaks output line that differs from
@@ -108,7 +107,7 @@ putStdoutColoured formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStdoutColourMode
     liftIO $ TIO.putStr $ case colourMode of
         DisableColour -> str
-        EnableColour  -> formatWithColour str
+        EnableColour -> formatWithColour str
 
 {- | Print 'Text' to 'System.IO.stderr' by providing a custom
 formatting function. Doesn't breaks output line that differs from
@@ -135,4 +134,4 @@ putStderrColoured formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStderrColourMode
     liftIO $ TIO.hPutStr stderr $ case colourMode of
         DisableColour -> str
-        EnableColour  -> formatWithColour str
+        EnableColour -> formatWithColour str

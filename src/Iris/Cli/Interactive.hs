@@ -10,32 +10,32 @@ Interactive mode datatype and CLI parser.
 
 @since 0.0.0.0
 -}
+module Iris.Cli.Interactive (
+    InteractiveMode (..),
+    interactiveModeP,
+    handleInteractiveMode,
+) where
 
-module Iris.Cli.Interactive
-    ( InteractiveMode (..)
-    , interactiveModeP
-    , handleInteractiveMode
-    ) where
-
-import Options.Applicative ( (<|>) )
+import Options.Applicative ((<|>))
 import qualified Options.Applicative as Opt
-import System.IO (stdin)
 import System.Console.ANSI (hSupportsANSI)
+import System.IO (stdin)
 
 {- | Datatype for specifying if the terminal is interactive.
 
 @since 0.0.0.0
 -}
 data InteractiveMode
-    -- | @since 0.0.0.0
-    = Interactive
-    -- | @since 0.0.0.0
-    | NonInteractive
+    = -- | @since 0.0.0.0
+      Interactive
+    | -- | @since 0.0.0.0
+      NonInteractive
     deriving stock
-        ( Show       -- ^ @since 0.0.0.0
-        , Eq         -- ^ @since 0.0.0.0
+        ( Show
+          -- ^ @since 0.0.0.0
+        , Eq
+          -- ^ @since 0.0.0.0
         )
-
 
 {- | A CLI option parser for switching to non-interactive mode
 if the @--no-input@ flag is passed.
@@ -46,10 +46,12 @@ interactiveModeP :: Opt.Parser InteractiveMode
 interactiveModeP = nonInteractiveP <|> pure Interactive
   where
     nonInteractiveP :: Opt.Parser InteractiveMode
-    nonInteractiveP = Opt.flag' NonInteractive $ mconcat
-        [ Opt.long "no-input"
-        , Opt.help "Enter the terminal in non-interactive mode"
-        ]
+    nonInteractiveP =
+        Opt.flag' NonInteractive $
+            mconcat
+                [ Opt.long "no-input"
+                , Opt.help "Enter the terminal in non-interactive mode"
+                ]
 
 {- | Forces non interactive mode when the terminal is not interactive
 
