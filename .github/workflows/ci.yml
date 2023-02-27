@@ -72,6 +72,7 @@ jobs:
 
     - name: Test
       run: |
+        env
         cabal test all
 
     - name: Documentation
