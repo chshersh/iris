@@ -28,7 +28,6 @@ import qualified Options.Applicative as Opt
 
 @since 0.0.0.0
 -}
-
 cmdParserInfo :: forall cmd appEnv . CliEnvSettings cmd appEnv -> Opt.ParserInfo (Cmd cmd)
 cmdParserInfo CliEnvSettings{..} = Opt.info
   ( Opt.helper

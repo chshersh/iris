@@ -6,7 +6,7 @@ Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
 Stability               : Experimental
 Portability             : Portable
 
-Interative mode datatype and CLI parser.
+Interactive mode datatype and CLI parser.
 
 @since 0.0.0.0
 -}
@@ -20,9 +20,9 @@ module Iris.Cli.Interactive
 import Options.Applicative ( (<|>) )
 import qualified Options.Applicative as Opt
 import System.IO (stdin)
-import System.Console.ANSI
+import System.Console.ANSI (hSupportsANSI)
 
-{- Datatype for specifying if the terminal is interactive.
+{- | Datatype for specifying if the terminal is interactive.
 
 @since 0.0.0.0
 -}
@@ -37,7 +37,8 @@ data InteractiveMode
         )
 
 
-{- | A CLI option parser for switching to non-interactive mode if the flag is passed.
+{- | A CLI option parser for switching to non-interactive mode
+if the @--no-input@ flag is passed.
 
 @since 0.0.0.0
 -}
@@ -55,14 +56,15 @@ interactiveModeP = nonInteractiveP <|> pure Interactive
 Use this function to check whether you can get input from the terminal:
 
 @
-'handleInteractiveMode' 'requestedInteractiveMode'
+'handleInteractiveMode' requestedInteractiveMode
 @
 
-If the terminal is non interactive i.e. the program is run in a pipe, interactive mode is set to false no matter what
+If the terminal is non interactive i.e. the program is run in a pipe,
+interactive mode is set to false no matter what
 
 @since x.x.x.x
 -}
 handleInteractiveMode :: InteractiveMode -> IO InteractiveMode
 handleInteractiveMode optionMode = do
-    supportsANSI <-  hSupportsANSI stdin
+    supportsANSI <- hSupportsANSI stdin
     pure $ if supportsANSI then optionMode else NonInteractive

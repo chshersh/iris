@@ -8,12 +8,15 @@ Portability             : Portable
 
 Utilities to check required tools and their minimal version for a CLI app.
 
+Sometimes, your CLI application
+
 @since 0.0.0.0
 -}
 
 module Iris.Tool
-    ( -- * Types describing executable requirements
-      Tool (..)
+    ( -- * Requiring an executable
+      need
+    , Tool (..)
     , ToolSelector (..)
     , defaultToolSelector
 
@@ -22,7 +25,6 @@ module Iris.Tool
     , ToolCheckError (..)
     , ToolCheckException (..)
     , checkTool
-    , need
     ) where
 
 import Data.String (IsString (..))
@@ -30,7 +32,7 @@ import Data.Text (Text)
 import System.Directory (findExecutable)
 import System.Process (readProcess)
 import Control.Exception (Exception, throwIO)
-import Data.Foldable (for_)
+import Data.Foldable (traverse_)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 
 import qualified Data.Text as Text
@@ -91,6 +93,7 @@ data ToolCheckResult
     @since x.x.x.x
     -}
     = ToolCheckError ToolCheckError
+
     {- |
 
     @since 0.0.0.0
@@ -141,6 +144,10 @@ checkTool Tool{..} = findExecutable (Text.unpack toolName) >>= \case
                 then pure ToolOk
                 else pure $ ToolCheckError $ ToolWrongVersion version
 
+{- |
+
+@since 0.0.0.0
+-}
 newtype ToolCheckException = ToolCheckException ToolCheckError
     deriving stock
         ( Show  -- ^ @since 0.0.0.0
@@ -155,14 +162,27 @@ newtype ToolCheckException = ToolCheckException ToolCheckError
         )
 
 
-{-|
+{- | Use this function to require specific CLI tools for your CLI application.
+
+The function can be used in the beginning of each command in the following way:
+
+@
+app :: App ()
+app = Iris.'Iris.Env.asksCliEnv' Iris.'Iris.Env.cliEnvCmd' >>= __\\case__
+    Download url -> do
+        Iris.'need' ["curl"]
+        runDownload url
+    Evaluate hs -> do
+        Iris.'need' ["ghc", "cabal"]
+        runEvaluate hs
+@
 
 __Throws:__ 'ToolCheckException' if can't find a tool or if it has wrong version.
+
 @since 0.0.0.0
 -}
 need :: MonadIO m => [Tool] -> m ()
-need tools =
-    for_ tools $ \tool ->
-        liftIO $ checkTool tool >>= \case
-            ToolOk  -> pure ()
-            (ToolCheckError toolErr) -> throwIO $ ToolCheckException toolErr
+need = traverse_ $ \tool ->
+  liftIO $ checkTool tool >>= \case
+      ToolOk -> pure ()
+      ToolCheckError toolErr -> throwIO $ ToolCheckException toolErr

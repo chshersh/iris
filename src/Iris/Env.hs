@@ -43,8 +43,8 @@ every CLI app and parameter
 
 Has the following type parameters:
 
-* @cmd@ — application commands
-* @appEnv@ — application-specific environment; use @()@ if you don't
+* @cmd@: application commands
+* @appEnv@: application-specific environment; use @()@ if you don't
   have custom app environment
 
 @since 0.0.0.0
