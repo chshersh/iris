@@ -49,7 +49,7 @@ expectedHelpTextWithVersion =
     \  --no-colour              Never output colours"
 
 expectedNumericVersion :: String
-expectedNumericVersion = "0.0.0.0"
+expectedNumericVersion = "0.1.0.0"
 
 cliSpec :: Spec
 cliSpec = describe "Cli Options" $ do

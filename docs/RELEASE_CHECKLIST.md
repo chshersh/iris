@@ -16,6 +16,7 @@ version of Iris.
     rg "x\.x\.x\.x" --files-with-matches | xargs sed -i '' 's/x.x.x.x/1.3.2.0/g'
     ```
 
+- [ ] Updated `expectedNumericVersion` `Test.Iris.Cli` to the new one
 - [ ] Create a new release on GitHub with the new version
 - [ ] Upload dist to Hackage
 - [ ] (Optional) Upload documentation to Hackage
