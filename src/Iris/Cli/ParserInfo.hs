@@ -11,7 +11,7 @@ Portability             : Portable
 
 Parser information for the default CLI parser.
 
-@since 0.0.0.0
+@since 0.1.0.0
 -}
 module Iris.Cli.ParserInfo (cmdParserInfo) where
 
@@ -25,7 +25,7 @@ import qualified Options.Applicative as Opt
 
 {- |
 
-@since 0.0.0.0
+@since 0.1.0.0
 -}
 cmdParserInfo :: forall cmd appEnv. CliEnvSettings cmd appEnv -> Opt.ParserInfo (Cmd cmd)
 cmdParserInfo CliEnvSettings{..} =

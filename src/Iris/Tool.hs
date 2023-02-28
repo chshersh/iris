@@ -88,7 +88,7 @@ defaultToolSelector =
 data ToolCheckResult
     = -- |
       --
-      --     @since x.x.x.x
+      --     @since 0.1.0.0
       ToolCheckError ToolCheckError
     | -- |
       --
@@ -103,22 +103,22 @@ data ToolCheckResult
 
 {- |
 
-@since x.x.x.x
+@since 0.1.0.0
 -}
 data ToolCheckError
     = -- |
       --
-      --     @since x.x.x.x
+      --     @since 0.1.0.0
       ToolNotFound Text
     | -- |
       --
-      --     @since x.x.x.x
+      --     @since 0.1.0.0
       ToolWrongVersion Text
     deriving stock
         ( Show
-          -- ^ @since x.x.x.x
+          -- ^ @since 0.1.0.0
         , Eq
-          -- ^ @since x.x.x.x
+          -- ^ @since 0.1.0.0
         )
 
 {- |
@@ -141,22 +141,22 @@ checkTool Tool{..} =
                         then pure ToolOk
                         else pure $ ToolCheckError $ ToolWrongVersion version
 
-{- |
+{- | An exception thrown by 'need' when there's an error requiring a tool.
 
-@since 0.0.0.0
+@since 0.1.0.0
 -}
 newtype ToolCheckException = ToolCheckException ToolCheckError
     deriving stock
         ( Show
-          -- ^ @since 0.0.0.0
+          -- ^ @since 0.1.0.0
         )
     deriving newtype
         ( Eq
-          -- ^ @since 0.0.0.0
+          -- ^ @since 0.1.0.0
         )
     deriving anyclass
         ( Exception
-          -- ^ @since 0.0.0.0
+          -- ^ @since 0.1.0.0
         )
 
 {- | Use this function to require specific CLI tools for your CLI application.

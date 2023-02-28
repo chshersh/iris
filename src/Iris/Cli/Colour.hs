@@ -8,7 +8,7 @@ Portability             : Portable
 
 CLI parser for the @--colour@ and @--no-colour@ options.
 
-@since x.x.x.x
+@since 0.1.0.0
 -}
 module Iris.Cli.Colour (
     ColourOption (..),
@@ -24,26 +24,26 @@ disabled or autodetected.
 
 See 'colourOptionP' for the parser of this option.
 
-@since x.x.x.x
+@since 0.1.0.0
 -}
 data ColourOption
-    = -- | @since x.x.x.x
+    = -- | @since 0.1.0.0
       Always
-    | -- | @since x.x.x.x
+    | -- | @since 0.1.0.0
       Never
-    | -- | @since x.x.x.x
+    | -- | @since 0.1.0.0
       Auto
     deriving stock
         ( Show
-          -- ^ @since x.x.x.x
+          -- ^ @since 0.1.0.0
         , Eq
-          -- ^ @since x.x.x.x
+          -- ^ @since 0.1.0.0
         , Ord
-          -- ^ @since x.x.x.x
+          -- ^ @since 0.1.0.0
         , Enum
-          -- ^ @since x.x.x.x
+          -- ^ @since 0.1.0.0
         , Bounded
-          -- ^ @since x.x.x.x
+          -- ^ @since 0.1.0.0
         )
 
 {- | A CLI option parser for the desired coloured output mode in the terminal.
@@ -51,7 +51,7 @@ data ColourOption
 It parses @--colour@ and @--no-colour@ flags explicitly. Otherwise, it defaults
 to 'Auto'.
 
-@since x.x.x.x
+@since 0.1.0.0
 -}
 colourOptionP :: Opt.Parser ColourOption
 colourOptionP = alwaysP <|> neverP <|> pure Auto

@@ -42,12 +42,16 @@ Generally, the process of submitting, reviewing and accepting PRs
 should be as lightweight as possible if you've discussed the
 implementation beforehand. However, there're still a few requirements:
 
-1. The code should be formatted with [fourmolu][fourmolu]
+1. Be polite and respectful in communications. Follow our
+   [Code of Conduct](https://github.com/chshersh/iris/blob/main/CODE_OF_CONDUCT.md).
+2. The code should be formatted with [fourmolu][fourmolu]
    using the [Iris-specific configuration][fourmolu-config].
    Your changes will be rejected if they don't follow the formatting
    requirements.
-2. Be polite and respectful in communications. Follow our
-   [Code of Conduct](https://github.com/chshersh/iris/blob/main/CODE_OF_CONDUCT.md).
+3. Add a `@since x.x.x.x` annotation to all newly introduced and exported types,
+   classes, functions, fields and instances.
+4. Add an entry to CHANGELOG.md describing your changes in the format similar to
+   other changes.
 
 [fourmolu]: https://hackage.haskell.org/package/fourmolu
 [fourmolu-config]: https://github.com/chshersh/iris/blob/main/fourmolu.yaml

@@ -91,7 +91,7 @@ These things should disable colors:__
 ℹ️ Iris performs this check on the application start automatically so you don't
 need to call this function manually.
 
-@since x.x.x.x
+@since 0.1.0.0
 -}
 detectColourMode
     :: Handle
