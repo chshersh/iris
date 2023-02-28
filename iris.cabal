@@ -110,6 +110,9 @@ test-suite iris-test
   hs-source-dirs:      test
   main-is:             Spec.hs
 
+  autogen-modules:
+    Paths_iris
+
   other-modules:
     Paths_iris
     Test.Iris
