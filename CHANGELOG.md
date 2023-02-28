@@ -51,8 +51,11 @@ available [on GitHub][2].
       between `ByteString` and `Text` or change your types to `Text`
 - [#67](https://github.com/chshersh/iris/issues/67):
   Remove the `cliEnvSettingsRequiredTools` field from the `CliEnvSettings` type.
+  Also remove the `CliEnvException` type.  Now, a new function `need` from
+  `Iris.Tool` should be used for each individual command instead.
   (by [@german1608])
-    - __Migration guide:__ Use the `need` function from the `Iris.Tool` module instead.
+    - __Migration guide 1:__ Use the `need` function from the `Iris.Tool` module instead.
+    - __Migration guide 2:__ Don't catch `CliEnvException` from `mkCliEnv` anymore.
 - [#33](https://github.com/chshersh/iris/issues/33):
   Move errors from `ToolCheckResult` into a separate type
   (by [@charrsky])

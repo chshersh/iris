@@ -52,7 +52,7 @@ appSettings env = Iris.defaultCliEnvSettings
     }
 @
 
-@since x.x.x.x
+@since 0.1.0.0
 -}
 module Iris.Settings (
     -- * Settings for the CLI app
@@ -83,7 +83,7 @@ data CliEnvSettings (cmd :: Type) (appEnv :: Type) = CliEnvSettings
     , cliEnvSettingsVersionSettings :: Maybe VersionSettings
     -- ^ @since 0.0.0.0
     , cliEnvSettingsAppName :: Maybe String
-    -- ^ @since x.x.x.x
+    -- ^ @since 0.1.0.0
     }
 
 {- | Default Iris app settings.
