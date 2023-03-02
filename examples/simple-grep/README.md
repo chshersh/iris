@@ -3,7 +3,7 @@
 The file contains an introduction tutorial on building a simple CLI tool with
 Iris.
 
-We're going to build a tool for finding finding lines that contain a given
+We're going to build a tool for finding lines that contain a given
 string in a given file. Like a very simple clone of
 [grep](https://www.gnu.org/software/grep/) or more modern
 [ripgrep](https://github.com/BurntSushi/ripgrep)
