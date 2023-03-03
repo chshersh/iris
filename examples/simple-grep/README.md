@@ -347,7 +347,7 @@ A few final notes:
   field in `appSettings`. Iris will run the parser on the start and either throw
   an exception on parsing errors or parse successfully and provide the result in
   `CliEnv` in the `CliEnvApp`.
-* Parse CLI options are stored in the `cliEnvCmd` field of the Iris environment.
+* Parsed CLI options are stored in the `cliEnvCmd` field of the Iris environment.
 * We get this field by calling the `asksCliEnv` function. Since our `App` type
   derived `MonadReader` with the proper arguments, we can extract all the
   environment fields.
