@@ -387,7 +387,7 @@ Available options:
 And we can finally run it to see the result:
 
 ```shell
-$ cabal exec simple-grep -- -f iris.cabal -s iris
+$ cabal run simple-grep -- -f iris.cabal -s iris
 2: name:                iris
 7:     See [README.md](https://github.com/chshersh/iris#iris) for more details.
 8: homepage:            https://github.com/chshersh/iris
