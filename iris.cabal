@@ -94,6 +94,9 @@ library
       Iris.Env
       Iris.Settings
       Iris.Tool
+      Iris.Interactive 
+        Iris.Interactive.Question 
+       
 
   build-depends:
     , ansi-terminal        ^>= 0.11
@@ -121,6 +124,8 @@ test-suite iris-test
       Test.Iris.Colour
         Test.Iris.Colour.Mode
       Test.Iris.Tool
+      Test.Iris.Interactive
+        Test.Iris.Interactive.Question
 
   build-depends:
     , iris

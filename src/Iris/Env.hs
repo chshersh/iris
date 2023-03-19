@@ -27,7 +27,7 @@ module Iris.Env (
 
 import Control.Monad.Reader (MonadReader, asks)
 import Data.Kind (Type)
-import System.IO (stderr, stdout)
+import System.IO (stderr, stdout, stdin, Handle)
 
 import Iris.Cli.Interactive (InteractiveMode, handleInteractiveMode)
 import Iris.Cli.Internal (Cmd (..))
@@ -59,6 +59,8 @@ data CliEnv (cmd :: Type) (appEnv :: Type) = CliEnv
     -- ^ @since 0.0.0.0
     , cliEnvInteractiveMode :: InteractiveMode
     -- ^ @since 0.0.0.0
+    , cliEnvInteractiveInputHandle :: Handle
+    -- ^ @since x.x.x.x
     }
 
 {- |
@@ -82,6 +84,7 @@ mkCliEnv cliEnvSettings@CliEnvSettings{..} = do
             , cliEnvStderrColourMode = stderrColourMode
             , cliEnvAppEnv = cliEnvSettingsAppEnv
             , cliEnvInteractiveMode = interactive
+            , cliEnvInteractiveInputHandle = stdin
             }
 
 {- | Get a field from the global environment 'CliEnv'.
