@@ -48,7 +48,7 @@ module Iris (
     module Iris.Settings,
     -- $tool
     module Iris.Tool,
-    module Iris.Interactive, 
+    module Iris.Interactive,
 ) where
 
 import Iris.App
@@ -56,9 +56,9 @@ import Iris.Browse
 import Iris.Cli
 import Iris.Colour
 import Iris.Env
+import Iris.Interactive
 import Iris.Settings
 import Iris.Tool
-import Iris.Interactive 
 
 {- $app
 CLI Application monad.

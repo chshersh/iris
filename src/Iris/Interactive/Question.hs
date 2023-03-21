@@ -12,19 +12,18 @@ Asking Questions. Receiving answers.
 
 @since x.x.x.x
 -}
-
 module Iris.Interactive.Question (
     yesno,
     YesNo (..),
-    parseYesNo, -- export needed for testing 
-) where 
+    parseYesNo, -- export needed for testing
+) where
 
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
 
 import Data.Text (Text, toUpper)
-import System.IO (hFlush, stdout)
 import qualified Data.Text.IO as TIO
+import System.IO (hFlush, stdout)
 
 import Iris.Cli.Interactive (InteractiveMode (..))
 import Iris.Env (CliEnv (..), asksCliEnv)
@@ -41,8 +40,9 @@ parseYesNo t = case toUpper t of
 
 Parsed as No: "N", "NO" (lower- or uppercase)
 -}
-data YesNo = 
-    No | Yes
+data YesNo
+    = No
+    | Yes
     deriving stock
         ( Show
           -- ^ @since x.x.x.x
@@ -56,9 +56,9 @@ data YesNo =
           -- ^ @since x.x.x.x
         )
 
-{- | Ask a yes/no question to stdout, read the reply from terminal, return an Answer.  
-     
-In case of running non-interactively, return the provided default 
+{- | Ask a yes/no question to stdout, read the reply from terminal, return an Answer.
+
+In case of running non-interactively, return the provided default
 
 Example usage:
 
@@ -74,20 +74,21 @@ app = do
 
 @since x.x.x.x
 -}
-yesno :: (MonadIO m, MonadReader (CliEnv cmd appEnv) m)
-    => Text  
-    -> YesNo 
-    -> m YesNo 
-yesno question defaultAnswer  = do
+yesno
+    :: (MonadIO m, MonadReader (CliEnv cmd appEnv) m)
+    => Text
+    -> YesNo
+    -> m YesNo
+yesno question defaultAnswer = do
     interactiveMode <- asksCliEnv cliEnvInteractiveMode
-    case  interactiveMode of
-            NonInteractive -> pure defaultAnswer
-            Interactive -> liftIO $ ask question >>= loop 
-    where
-        loop (Just a) = pure a
-        loop Nothing =  ask "  Please answer (Y)es or (N)o " >>= loop
+    case interactiveMode of
+        NonInteractive -> pure defaultAnswer
+        Interactive -> liftIO $ ask question >>= loop
+  where
+    loop (Just a) = pure a
+    loop Nothing = ask "  Please answer (Y)es or (N)o " >>= loop
 
-        ask q = do
-            TIO.putStr q
-            hFlush stdout
-            parseYesNo <$> TIO.getLine 
+    ask q = do
+        TIO.putStr q
+        hFlush stdout
+        parseYesNo <$> TIO.getLine
