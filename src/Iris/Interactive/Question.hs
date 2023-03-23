@@ -15,30 +15,37 @@ Asking Questions. Receiving answers.
 module Iris.Interactive.Question (
     yesno,
     YesNo (..),
-    parseYesNo, -- export needed for testing
+    parseYesNo,
 ) where
 
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
 
-import Data.Text (Text, toUpper)
-import qualified Data.Text.IO as TIO
+import Data.Text (Text)
+import qualified Data.Text as Text
+import qualified Data.Text.IO as Text
 import System.IO (hFlush, stdout)
 
 import Iris.Cli.Interactive (InteractiveMode (..))
 import Iris.Env (CliEnv (..), asksCliEnv)
 
+{-
+@since x.x.x.x
+-}
 parseYesNo :: Text -> Maybe YesNo
-parseYesNo t = case toUpper t of
+parseYesNo t = case Text.toUpper . Text.strip $ t of
     "Y" -> Just Yes
     "YES" -> Just Yes
+    "YS" -> Just Yes
     "N" -> Just No
     "NO" -> Just No
     _ -> Nothing
 
-{- | Parsed as Yes: "Y", "YES" (lower- or uppercase)
+{- | Parsed as Yes: "Y", "YES", "YS" (lower- or uppercase)
 
 Parsed as No: "N", "NO" (lower- or uppercase)
+
+@since x.x.x.x
 -}
 data YesNo
     = No
@@ -70,6 +77,17 @@ app = do
         Iris.Yes -> proceed
         Iris.No -> Iris.outLn "Aborting"
 
+
+\$ ./irisapp
+Would you like to proceed? (yes/no)
+I don't understand your answer: ''
+Please, answer yes or no (or y, or n)
+Would you like to proceed? (yes/no) ne
+I don't understand your answer: 'ne'
+Please, answer yes or no (or y, or n)
+Would you like to proceed? (yes/no) NO
+Aborting
+
 @
 
 @since x.x.x.x
@@ -77,18 +95,24 @@ app = do
 yesno
     :: (MonadIO m, MonadReader (CliEnv cmd appEnv) m)
     => Text
+    -- ^ Question Text
     -> YesNo
+    -- ^ Default answer when @--no-input@ is provided
     -> m YesNo
 yesno question defaultAnswer = do
     interactiveMode <- asksCliEnv cliEnvInteractiveMode
     case interactiveMode of
         NonInteractive -> pure defaultAnswer
-        Interactive -> liftIO $ ask question >>= loop
+        Interactive -> liftIO loop
   where
-    loop (Just a) = pure a
-    loop Nothing = ask "  Please answer (Y)es or (N)o " >>= loop
-
-    ask q = do
-        TIO.putStr q
+    loop :: IO YesNo
+    loop = do
+        Text.putStr $ question <> " (yes/no) "
         hFlush stdout
-        parseYesNo <$> TIO.getLine
+        input <- Text.getLine
+        case parseYesNo input of
+            Just answer -> pure answer
+            Nothing -> do
+                Text.putStrLn $ "I don't understand your answer: '" <> input <> "'"
+                Text.putStrLn "Please, answer yes or no (or y, or n)"
+                loop

@@ -1,9 +1,7 @@
 module Test.Iris.Interactive.Question (questionSpec) where
 
-import Test.Hspec (Spec, describe, it, shouldReturn)
-
-import Control.Monad (forM_)
-import Data.Text (unpack)
+import Data.Text (Text)
+import Test.Hspec (Spec, SpecWith, describe, it, shouldMatchList)
 
 import Iris.Interactive.Question (
     -- under test
@@ -11,26 +9,21 @@ import Iris.Interactive.Question (
     parseYesNo,
  )
 
+yesAnswers :: [Text]
+yesAnswers = "y" : "Y" : [y <> e <> s | y <- ["y", "Y"], e <- ["e", "E", ""], s <- ["s", "S"]]
+
 questionSpec :: Spec
 questionSpec =
     describe "Question - parse YesNo" $ do
-        describe "should parse to Just Yes" $ do
-            forM_ ["y", "Y", "YES", "yes", "Yes"] $
-                \m -> do
-                    it (unpack m) $ do
-                        pure (parseYesNo m) `shouldReturn` Just Yes
+        checkElements yesAnswers (Just Yes)
+        checkElements ["n", "N", "NO", "no", "No", "nO"] (Just No)
+        checkElements ["", "a", "ye", "NOone", "yesterday", "oui"] Nothing
 
-        describe "should parse to Just No" $ do
-            forM_ ["n", "N", "NO", "no", "No"] $
-                \m -> do
-                    it (unpack m) $ do
-                        pure (parseYesNo m) `shouldReturn` Just No
-
-        describe "should parse to Nothing" $ do
-            forM_ ["a", "ye", "NOone", "yesterday", "oui"] $
-                \m -> do
-                    it (unpack m) $ do
-                        pure (parseYesNo m) `shouldReturn` Nothing
-
-            it "[empty string]" $ do
-                pure (parseYesNo "") `shouldReturn` Nothing
+checkElements
+    :: [Text]
+    -> Maybe YesNo
+    -> SpecWith ()
+checkElements values expected = do
+    describe ("elementes should parse to " ++ show expected) $ do
+        it (show values) $ do
+            map (\x -> (x, parseYesNo x)) values `shouldMatchList` map (,expected) values
