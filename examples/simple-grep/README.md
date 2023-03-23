@@ -23,7 +23,7 @@ When run, you can expect to see output similar to the following:
 Our simple example uses the following Haskell packages:
 
 * `base`: the Haskell standard library
-* `colourista`: a terminal output colouring library
+* `pretty-terminal`: a terminal output colouring library
 * `iris`: a Haskell CLI framework
 * `mtl`: a library with monad transformers
 * `text`: a library with the efficient `Text` type
@@ -69,13 +69,13 @@ import Control.Monad.Reader (MonadReader)
 import Data.Foldable (traverse_)
 import Data.Text (Text)
 
-import qualified Colourista
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
 import qualified Options.Applicative as Opt
+import qualified System.Console.Pretty as Pretty
 ```
 
-> We're writing a simple grep utility, we need here the `colourista` library for
+> We're writing a simple grep utility, we need here the `pretty-terminal` library for
 > printing colored messages. Other libraries such as `text` are standard for any
 > CLI tool. `optparse-applicative` is needed here for defining the set of
 > commands that Iris will consume.
@@ -282,7 +282,7 @@ add a few more requirements to our output:
    `stderr`.
 2. Line numbers should be coloured and bold.
 
-We're going to use `colourista` for colouring. Iris provides helper functions
+We're going to use `pretty-terminal` for colouring. Iris provides helper functions
 for handling terminal colouring support and printing coloured output.
 
 Writing this in the code:
@@ -298,7 +298,7 @@ output = traverse_ outputLine
 
     outputLineNumber :: Int -> App ()
     outputLineNumber i = Iris.putStderrColoured
-        (Colourista.formatWith [Colourista.yellow, Colourista.bold])
+        (Pretty.color Pretty.Yellow . Pretty.style Pretty.Bold)
         (Text.pack (show i) <> ": ")
 ```
 

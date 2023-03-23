@@ -46,10 +46,10 @@ executable simple-grep
 
   build-depends:
      , base
-     , colourista
      , iris
      , mtl
      , optparse-applicative
+     , pretty-terminal
      , text
 
   build-tool-depends:  markdown-unlit:markdown-unlit
