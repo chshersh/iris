@@ -1,7 +1,9 @@
 module Test.Iris.Interactive.Question (questionSpec) where
 
+import Control.Monad (forM_)
 import Data.Text (Text)
-import Test.Hspec (Spec, SpecWith, describe, it, shouldMatchList)
+import qualified Data.Text as Text
+import Test.Hspec (Spec, SpecWith, describe, it, shouldBe)
 
 import Iris.Interactive.Question (
     -- under test
@@ -17,7 +19,9 @@ questionSpec =
     describe "Question - parse YesNo" $ do
         checkElements yesAnswers (Just Yes)
         checkElements ["n", "N", "NO", "no", "No", "nO"] (Just No)
-        checkElements ["", "a", "ye", "NOone", "yesterday", "oui"] Nothing
+        checkElements ["a", "ye", "NOone", "yesterday", "oui"] Nothing
+        it "Empty string parses to Nothing" $
+            parseYesNo "" `shouldBe` Nothing
 
 checkElements
     :: [Text]

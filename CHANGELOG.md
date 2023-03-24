@@ -139,6 +139,7 @@ Initial release prepared by [@chshersh].
 [@himanshumalviya15]: https://github.com/himanshumalviya15
 [@lillycat332]: https://github.com/lillycat332
 [@marcellourbani]: https://github.com/marcellourbani
+[@martinhelmer]: https://github.com/martinhelmer
 [@zetkez]: https://github.com/zetkez
 
 <!-- Header links -->
