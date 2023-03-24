@@ -33,11 +33,11 @@ import qualified Data.Text.IO as TIO
 {- | Print 'Text' to 'System.IO.stdout' by providing a custom
 formatting function.
 
-This works especially well with the @colourista@ package:
+This works especially well with the @pretty-terminal@ package:
 
 @
 'putStdoutColouredLn'
-    (Colourista.formatWith [Colourista.bold, Colourista.green])
+    (style Bold . color Green)
     "my message"
 @
 
@@ -59,11 +59,11 @@ putStdoutColouredLn formatWithColour str = do
 {- | Print 'Text' to 'System.IO.stderr' by providing a custom
 formatting function.
 
-This works especially well with the @colourista@ package:
+This works especially well with the @pretty-terminal@ package:
 
 @
 'putStderrColouredLn'
-    (Colourista.formatWith [Colourista.bold, Colourista.green])
+    (style Bold . color Green)
     "my message"
 @
 
@@ -86,11 +86,11 @@ putStderrColouredLn formatWithColour str = do
 formatting function. Doesn't breaks output line that differs from
 `putStdoutColouredLn`
 
-This works especially well with the @colourista@ package:
+This works especially well with the @pretty-terminal@ package:
 
 @
 'putStdoutColoured'
-    (Colourista.formatWith [Colourista.bold, Colourista.green])
+    (style Bold . color Green)
     "my message"
 @
 
@@ -113,11 +113,11 @@ putStdoutColoured formatWithColour str = do
 formatting function. Doesn't breaks output line that differs from
 `putStderrColouredLn`
 
-This works especially well with the @colourista@ package:
+This works especially well with the @pretty-terminal@ package:
 
 @
 'putStderrColoured'
-    (Colourista.formatWith [Colourista.bold, Colourista.green])
+    (style Bold . color Green)
     "my message"
 @
 
