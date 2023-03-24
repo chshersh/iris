@@ -24,6 +24,7 @@ checkElements
     -> Maybe YesNo
     -> SpecWith ()
 checkElements values expected = do
-    describe ("elementes should parse to " ++ show expected) $ do
-        it (show values) $ do
-            map (\x -> (x, parseYesNo x)) values `shouldMatchList` map (,expected) values
+    describe ("should parse to " ++ show expected) $
+        forM_ values $ \strValue ->
+            it (Text.unpack strValue) $
+                parseYesNo strValue `shouldBe` expected
