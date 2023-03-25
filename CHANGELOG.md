@@ -10,6 +10,15 @@ available [on GitHub][2].
 
 <!-- Add new changes here -->
 
+### Added 
+[#9](https://github.com/chshersh/iris/issues/9):
+Implement Yes/No reading functions:
+
+  * Add `yesno` function for asking a question with can be answered with either Yes or No
+  * Add `YesNo` type (`Yes` | `No`)
+
+  (by [@martinhelmer])
+
 ## [0.1.0.0] — 2023-03-02 🎂
 
 ### Added
@@ -130,6 +139,7 @@ Initial release prepared by [@chshersh].
 [@himanshumalviya15]: https://github.com/himanshumalviya15
 [@lillycat332]: https://github.com/lillycat332
 [@marcellourbani]: https://github.com/marcellourbani
+[@martinhelmer]: https://github.com/martinhelmer
 [@zetkez]: https://github.com/zetkez
 
 <!-- Header links -->
