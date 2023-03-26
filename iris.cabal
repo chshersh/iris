@@ -96,6 +96,7 @@ library
       Iris.Tool
       Iris.Interactive 
         Iris.Interactive.Question 
+      Iris.IO
        
 
   build-depends:
@@ -126,13 +127,15 @@ test-suite iris-test
       Test.Iris.Tool
       Test.Iris.Interactive
         Test.Iris.Interactive.Question
+      Test.Iris.IO
 
   build-depends:
     , iris
     , hspec >= 2.9.7 && < 2.11
     , text
     , optparse-applicative
-
+    , silently 
+    
   ghc-options:
     -threaded
     -rtsopts

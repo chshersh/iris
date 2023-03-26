@@ -49,6 +49,8 @@ module Iris (
     -- $tool
     module Iris.Tool,
     module Iris.Interactive,
+    module Iris.IO,
+    -- $io 
 ) where
 
 import Iris.App
@@ -56,6 +58,7 @@ import Iris.Browse
 import Iris.Cli
 import Iris.Colour
 import Iris.Env
+import Iris.IO
 import Iris.Interactive
 import Iris.Settings
 import Iris.Tool
@@ -78,6 +81,10 @@ Functions to detect terminal support for colouring and print coloured output.
 
 {- $env
 Global environment for a CLI application and CLI app settings.
+-}
+
+{- $io
+Output Text to stdout/ stderr 
 -}
 
 {- $settings

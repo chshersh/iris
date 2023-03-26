@@ -28,6 +28,7 @@ import System.IO (hFlush, stdout)
 
 import Iris.Cli.Interactive (InteractiveMode (..))
 import Iris.Env (CliEnv (..), asksCliEnv)
+import qualified Iris.IO as IO
 
 {-
 @since x.x.x.x
@@ -107,12 +108,12 @@ yesno question defaultAnswer = do
   where
     loop :: IO YesNo
     loop = do
-        Text.putStr $ question <> " (yes/no) "
+        IO.out $ question <> " (yes/no) "
         hFlush stdout
         input <- Text.getLine
         case parseYesNo input of
             Just answer -> pure answer
             Nothing -> do
-                Text.putStrLn $ "I don't understand your answer: '" <> input <> "'"
-                Text.putStrLn "Please, answer yes or no (or y, or n)"
+                IO.out $ "I don't understand your answer: '" <> input <> "'"
+                IO.out "Please, answer yes or no (or y, or n)"
                 loop

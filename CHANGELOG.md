@@ -11,6 +11,14 @@ available [on GitHub][2].
 <!-- Add new changes here -->
 
 ### Added 
+
+[#107] (https://github.com/chshersh/iris/issues/107):
+Implement 'out', 'outLn', 'err' and 'errLn' functions for outputting 'Text' to corresponding handlers
+
+  * Add `out`, `outLn`, `err` and `errLn` functions for outputting 'Text' to corresponding handlers
+
+  (by [@martinhelmer])
+  
 [#9](https://github.com/chshersh/iris/issues/9):
 Implement Yes/No reading functions:
 
