@@ -14,15 +14,15 @@ Usage example:
 @
 import qualified Iris
 
-main = do 
+main = do
     Iris.outLn "This goes to stdout"
     Iris.errLn "This goes to stderr"
 @
 
-Results in: 
+Results in:
 
 @
-$ ./app
+\$ ./app
 This goes to stdout
 This goes to stderr
 @
@@ -38,8 +38,7 @@ module Iris.IO (
 
 import Data.Text (Text)
 import qualified Data.Text.IO as Text
-import System.IO ( stderr, stdout )
-
+import System.IO (stderr, stdout)
 
 {- | Write the given Text to stdout.
 No linefeed at the end.
@@ -73,7 +72,7 @@ No linefeed at the end.
 
 @
 ghci> Iris.err "foo" >> Iris.err "bar"
-foobarghci> 
+foobarghci>
 
 @
 @since x.x.x.x
@@ -87,7 +86,7 @@ err = Text.hPutStr stderr
 ghci> Iris.errLn "foo" >> Iris.errLn "bar"
 foo
 bar
-ghci> 
+ghci>
 
 @
 @since x.x.x.x

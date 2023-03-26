@@ -50,7 +50,7 @@ module Iris (
     module Iris.Tool,
     module Iris.Interactive,
     module Iris.IO,
-    -- $io 
+    -- $io
 ) where
 
 import Iris.App
@@ -84,7 +84,7 @@ Global environment for a CLI application and CLI app settings.
 -}
 
 {- $io
-Output Text to stdout/ stderr 
+Output Text to stdout/ stderr
 -}
 
 {- $settings

@@ -1,15 +1,14 @@
 module Test.Iris.IO (ioSpec)
-
 where
 
-
 import Test.Hspec (Spec, describe, it, shouldBe)
--- Silently has side effect: writes file to tmp (or current dir) and then deletes it. 
-import System.IO.Silently (hCapture_, hSilence)
+
+-- Silently has side effect: writes file to tmp (or current dir) and then deletes it.
+
 import System.IO (stderr, stdout)
+import System.IO.Silently (hCapture_, hSilence)
 
-import qualified Iris.IO as IO ( err, errLn, out, outLn )
-
+import qualified Iris.IO as IO (err, errLn, out, outLn)
 
 checkStdErr :: IO a -> IO String
 checkStdErr = hCapture_ [stderr] . hSilence [stdout]
