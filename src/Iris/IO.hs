@@ -1,6 +1,6 @@
 {- |
 Module                  : Iris.IO
-Copyright               : (c) 2022 Dmitrii Kovanikov
+Copyright               : (c) 2023 Dmitrii Kovanikov
 SPDX-License-Identifier : MPL-2.0
 Maintainer              : Dmitrii Kovanikov <kovanikov@gmail.com>
 Stability               : Experimental
@@ -36,6 +36,7 @@ module Iris.IO (
     errLn,
 ) where
 
+import Control.Monad.IO.Class (MonadIO (..))
 import Data.Text (Text)
 import qualified Data.Text.IO as Text
 import System.IO (stderr, stdout)
@@ -50,8 +51,9 @@ foobarghci>
 @
 @since x.x.x.x
 -}
-out :: Text -> IO ()
-out = Text.hPutStr stdout
+out :: MonadIO m => Text -> m ()
+out = do
+    liftIO . Text.hPutStr stdout
 
 {- | Write the given Text to stdout with linefeed at the end.
 
@@ -64,8 +66,8 @@ ghci>
 @
 @since x.x.x.x
 -}
-outLn :: Text -> IO ()
-outLn = Text.hPutStrLn stdout
+outLn :: MonadIO m => Text -> m ()
+outLn = liftIO . Text.hPutStrLn stdout
 
 {- | Write the given Text to stderr.
 No linefeed at the end.
@@ -77,8 +79,8 @@ foobarghci>
 @
 @since x.x.x.x
 -}
-err :: Text -> IO ()
-err = Text.hPutStr stderr
+err :: MonadIO m => Text -> m ()
+err = liftIO . Text.hPutStr stderr
 
 {- | Write the given Text to stderr with linefeed at the end.
 
@@ -91,5 +93,5 @@ ghci>
 @
 @since x.x.x.x
 -}
-errLn :: Text -> IO ()
-errLn = Text.hPutStrLn stderr
+errLn :: MonadIO m => Text -> m ()
+errLn = liftIO . Text.hPutStrLn stderr

@@ -49,7 +49,7 @@ putStdoutColouredLn
     -> m ()
 putStdoutColouredLn formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStdoutColourMode
-    liftIO $ IO.outLn $ case colourMode of
+    IO.outLn $ case colourMode of
         DisableColour -> str
         EnableColour -> formatWithColour str
 
@@ -75,7 +75,7 @@ putStderrColouredLn
     -> m ()
 putStderrColouredLn formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStderrColourMode
-    liftIO $ IO.errLn $ case colourMode of
+    IO.errLn $ case colourMode of
         DisableColour -> str
         EnableColour -> formatWithColour str
 
@@ -102,7 +102,7 @@ putStdoutColoured
     -> m ()
 putStdoutColoured formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStdoutColourMode
-    liftIO $ IO.out $ case colourMode of
+    IO.out $ case colourMode of
         DisableColour -> str
         EnableColour -> formatWithColour str
 
@@ -129,6 +129,6 @@ putStderrColoured
     -> m ()
 putStderrColoured formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStderrColourMode
-    liftIO $ IO.err $ case colourMode of
+    IO.err $ case colourMode of
         DisableColour -> str
         EnableColour -> formatWithColour str
