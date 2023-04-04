@@ -27,7 +27,7 @@ ioSpec =
             it "writes to stdout, LF " $ checkStdOut (IO.outLn "TEXT") `shouldReturn` "TEXT\n"
             it "does not write to stderr " $ checkStdErr (IO.outLn "TEXT") `shouldReturn` ""
         describe "err" $ do
-            it "writes to sterr, no LF " $ checkStdErr (IO.err "TEXT") `shouldReturn` "TEXT"
+            it "writes to stderr, no LF " $ checkStdErr (IO.err "TEXT") `shouldReturn` "TEXT"
             it "does not write to stdout " $ checkStdOut (IO.err "TEXT") `shouldReturn` ""
         describe "errLn" $ do
             it "writes to stderr, LF " $ checkStdErr (IO.errLn "TEXT") `shouldReturn` "TEXT\n"
