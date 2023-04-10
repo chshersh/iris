@@ -18,6 +18,10 @@ Implement Yes/No reading functions:
   * Add `YesNo` type (`Yes` | `No`)
 
   (by [@martinhelmer])
+  
+[#116](https://github.com/chshersh/iris/issues/116):
+Supports GHC 9.6.1
+  (by [@celsobonutti])
 
 ## [0.1.0.0] — 2023-03-02 🎂
 
