@@ -19,8 +19,8 @@ Implement Yes/No reading functions:
 
   (by [@martinhelmer])
   
-[#116](https://github.com/chshersh/iris/issues/116):
-Supports GHC 9.6.1
+* [#116](https://github.com/chshersh/iris/issues/116):
+  Supports GHC 9.6.1
   (by [@celsobonutti])
 
 ## [0.1.0.0] — 2023-03-02 🎂
@@ -135,6 +135,7 @@ Initial release prepared by [@chshersh].
 
 [@aleeusgr]: https://github.com/aleeusgr
 [@blackheaven]: https://github.com/blackheaven
+[@celsobonutti]: https://github.com/celsobonutti
 [@charrsky]: https://github.com/charrsky
 [@chshersh]: https://github.com/chshersh
 [@CThuleHansen]: https://github.com/CThuleHansen
