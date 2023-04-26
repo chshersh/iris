@@ -122,7 +122,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: fourmolu/fourmolu-action@v6
+      - uses: fourmolu/fourmolu-action@v8
 
   hlint:
     runs-on: ubuntu-latest
