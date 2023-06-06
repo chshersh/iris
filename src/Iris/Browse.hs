@@ -19,7 +19,9 @@ import           Control.Exception  (Exception, throwIO)
 import           System.Directory   (findExecutable)
 import           System.Environment (lookupEnv)
 import           System.Info        (os)
-import           System.Process     (callCommand, showCommandForUser)
+import           System.IO          (hPutStrLn, stderr)
+import           System.Process     (callCommand, callProcess, readProcess,
+                                     showCommandForUser)
 
 {- | Exception thrown by 'openInBrowser'.
 
@@ -108,4 +110,3 @@ shellRet :: FilePath -> [String] -> IO String
 shellRet cmd args = do
       hPutStrLn stderr $ "⚙  " ++ cmd ++ " " ++ unwords args
       shellRetSilent cmd args
-
