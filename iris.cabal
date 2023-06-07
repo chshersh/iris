@@ -122,6 +122,10 @@ test-suite iris-test
     Test.Iris
       Test.Iris.Common
       Test.Iris.Cli
+        Test.Iris.Cli.Help
+        Test.Iris.Cli.Version
+        Test.Iris.Cli.Conflict
+        Test.Iris.Cli.Interactive
       Test.Iris.Colour
         Test.Iris.Colour.Mode
       Test.Iris.Tool
