@@ -1,24 +1,13 @@
 module Test.Iris.Cli.Conflict (cliConflictsSpec) where
 
-import           Options.Applicative  (getParseResult)
-import           Test.Hspec           (Expectation, Spec, describe,
-                                       expectationFailure, it, shouldBe,
-                                       shouldReturn)
+import           Test.Hspec          (Expectation, Spec, describe,
+                                      expectationFailure, it, shouldBe)
 
-import           Iris                 (CliEnvSettings (..))
-import           Iris.Cli             (VersionSettings (versionSettingsMkDesc))
-import           Iris.Cli.Colour      (ColourOption (..))
-import           Iris.Cli.Interactive (InteractiveMode (..),
-                                       handleInteractiveMode)
+import           Iris                (CliEnvSettings (..))
 import           Iris.Cli.Internal
-import           Iris.Cli.ParserInfo  (cmdParserInfo)
-import           Iris.Cli.Version     (defaultVersionSettings)
-import           Iris.Settings        (defaultCliEnvSettings)
+import           Iris.Cli.ParserInfo (cmdParserInfo)
 
-import           Test.Iris.Common     (checkCI)
-
-import qualified Options.Applicative  as Opt
-import qualified Paths_iris           as Autogen
+import qualified Options.Applicative as Opt
 
 newtype UserDefinedParser a = UserDefinedParser {noInteractive :: a}
 
