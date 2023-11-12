@@ -22,13 +22,10 @@ module Iris.Colour.Formatting (
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader)
 import Data.Text (Text)
-import qualified Data.Text.IO as T
-import System.IO (stderr)
 
 import Iris.Colour.Mode (ColourMode (..))
 import Iris.Env (CliEnv (..), asksCliEnv)
-
-import qualified Data.Text.IO as TIO
+import qualified Iris.IO as IO
 
 {- | Print 'Text' to 'System.IO.stdout' by providing a custom
 formatting function.
@@ -52,7 +49,7 @@ putStdoutColouredLn
     -> m ()
 putStdoutColouredLn formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStdoutColourMode
-    liftIO $ T.putStrLn $ case colourMode of
+    IO.outLn $ case colourMode of
         DisableColour -> str
         EnableColour -> formatWithColour str
 
@@ -78,7 +75,7 @@ putStderrColouredLn
     -> m ()
 putStderrColouredLn formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStderrColourMode
-    liftIO $ T.hPutStrLn stderr $ case colourMode of
+    IO.errLn $ case colourMode of
         DisableColour -> str
         EnableColour -> formatWithColour str
 
@@ -105,7 +102,7 @@ putStdoutColoured
     -> m ()
 putStdoutColoured formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStdoutColourMode
-    liftIO $ TIO.putStr $ case colourMode of
+    IO.out $ case colourMode of
         DisableColour -> str
         EnableColour -> formatWithColour str
 
@@ -132,6 +129,6 @@ putStderrColoured
     -> m ()
 putStderrColoured formatWithColour str = do
     colourMode <- asksCliEnv cliEnvStderrColourMode
-    liftIO $ TIO.hPutStr stderr $ case colourMode of
+    IO.err $ case colourMode of
         DisableColour -> str
         EnableColour -> formatWithColour str
