@@ -15,11 +15,13 @@ module Iris.Browse (
     BrowseException (..),
 ) where
 
-import Control.Exception (Exception, throwIO)
-import System.Directory (findExecutable)
-import System.Environment (lookupEnv)
-import System.Info (os)
-import System.Process (callCommand, showCommandForUser)
+import           Control.Exception  (Exception, throwIO)
+import           System.Directory   (findExecutable)
+import           System.Environment (lookupEnv)
+import           System.Info        (os)
+import           System.IO          (hPutStrLn, stderr)
+import           System.Process     (callCommand, callProcess, readProcess,
+                                     showCommandForUser)
 
 {- | Exception thrown by 'openInBrowser'.
 
@@ -73,7 +75,7 @@ openInBrowser file =
                         ]
                 case browserExe of
                     Just browser -> runCommand browser [file]
-                    Nothing -> throwIO $ BrowserNotFoundException curOs
+                    Nothing      -> throwIO $ BrowserNotFoundException curOs
 
 -- | Execute a command with arguments.
 runCommand :: FilePath -> [String] -> IO ()
@@ -89,3 +91,22 @@ findFirstExecutable = \case
         findExecutable exe >>= \case
             Nothing -> findFirstExecutable exes
             Just path -> pure $ Just path
+
+shell :: FilePath -> [String] -> IO ()
+shell cmd args = do
+     hPutStrLn stderr $ "⚙  " ++ cmd ++ " " ++ unwords args
+     callProcess cmd args
+
+-- | Run the command but don't print it
+shellSilent :: FilePath -> [String] -> IO ()
+shellSilent cmd args = callProcess cmd args
+
+-- | Run the command, don't print it and return its stdout
+shellRetSilent :: FilePath -> [String] -> IO String
+shellRetSilent cmd args = readProcess cmd args ""
+
+-- | Run the command, print it with prompt to stderr and return its stdout
+shellRet :: FilePath -> [String] -> IO String
+shellRet cmd args = do
+      hPutStrLn stderr $ "⚙  " ++ cmd ++ " " ++ unwords args
+      shellRetSilent cmd args
